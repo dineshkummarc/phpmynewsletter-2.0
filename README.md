@@ -1,3 +1,3 @@
-2.0.6-beta pour tests uniquement.
+#phpmynewsletter-2.0
 
-2.0.6-beta, only for tests !
+The new version of phpmynewsletter
