@@ -24,13 +24,17 @@ if(!file_exists("include/config.php")) {
 		die();
 	}
 }
-
-use PHPMailer;
-use Exception;
-require 'include/lib/PHPMailer/src/Exception.php';
-require 'include/lib/PHPMailer/src/PHPMailer.php';
-require 'include/lib/PHPMailer/src/SMTP.php';
-
+$row_config_globale = $cnx->SqlRow("SELECT * FROM $table_global_config");
+(count($row_config_globale)>0)?$r='SUCCESS':$r='';
+if($r != 'SUCCESS') {
+	include("include/lang/english.php");
+	echo "<div class='error'>".tr($r)."<br>";
+	echo "</div>";
+	exit;
+}
+if(empty($row_config_globale['language']))$row_config_globale['language']="english";
+include("include/lang/".$row_config_globale['language'].".php");
+require 'include/lib/PHPMailerAutoload.php';
 $step    = (empty($_GET['step']) ? "" : $_GET['step']);
 $subject = (!empty($_POST['subject'])) ? $_POST['subject'] : '';
 $message = (!empty($_POST['message'])) ? $_POST['message'] : '';
@@ -56,7 +60,7 @@ if($row_config_globale['sending_method']=='lbsmtp'){
 }
 switch ($step) {
 	case "sendpreview":
-		$mail			= new PHPMailer\PHPMailer\PHPMailer;
+		$mail			= new PHPMailer;
 		$mail->SMTPOptions 	= array(
 			'ssl' => array(
 				'verify_peer' => false,
@@ -73,16 +77,16 @@ switch ($step) {
 		$sender_email		= $newsletter['email'];
 		$sender_name		= $newsletter['name_organisation'];
 		$reply_email		= $newsletter['email_reply'];
-		$emptysender		= getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
+		$altersender		= getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
 		if (empty($sender_email)) {
-			$sender_email	= $emptysender['from_addr'];
-			$sender_name	= $emptysender['from_name'];
-			$reply_email	= $emptysender['from_addr'];
+			$sender_email	= $altersender['from_addr'];
+			$sender_name	= $altersender['from_name'];
+			$reply_email	= $altersender['from_addr'];
 		}
 		// recherche du mail de bounce (retour des non distribués), du particulier au général, sinon, par défaut : $bounce_mail
 		if (empty(trim($newsletter['bounce_email']))) { 		// from array $newsletter : particular desc
 			if (empty(trim($bounce_mail))) { 			// from config_bounce.php : global desc
-				$bounce_email = $emptysender['from_addr'];	// from array $emptysender : default desc
+				$bounce_email = $altersender['from_addr'];	// from array $altersender : default desc
 			} else {
 				$bounce_email = $bounce_mail;
 			}
@@ -92,7 +96,7 @@ switch ($step) {
 		$mail->AddReplyTo($reply_email);		
 		$mail->SetFrom($sender_email,$sender_name);
 		$mail->Sender 	= $bounce_email;
-		$addr = $dest_adresse = $emptysender['preview_addr'];
+		$addr = $dest_adresse = $altersender['preview_addr'];
 		include("include/lib/switch_smtp.php");
 		$format			= $msg['type'];
 		$list_pj = $cnx->query("SELECT *
@@ -141,9 +145,9 @@ switch ($step) {
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="description" content="' . $subject . '" />';
 		$message       = str_replace('<title>[[SUBJECT]]</title>', $header.'<title>' . $subject . '</title>', $message);
-		$message       = str_replace('*|MC_PREVIEW_TEXT|*','',$message);
 		$preHeaderDesc = stripslashes($msg['preheader']);
-		$preHeader     = "<div class='preHeader' align='center' style='font-size:8px;font-family:arial,helvetica,sans-serif;padding-bottom:5px;color:#878e83;'>" . $preHeaderDesc . "</div>";
+		$preHeader     = "<div class='preHeader' align='center' 
+		style='font-size:8px;font-family:arial,helvetica,sans-serif;padding-bottom:5px;color:#878e83;'>" . $preHeaderDesc . "</div>";
 		$message       = str_replace('</style>', ' .preHeader {display:none!important;}</style></head><body>'.$preHeader, $message);
 		$message       = str_replace("  ", " ", $message);
 		if ( $format == "html" ){
@@ -165,8 +169,7 @@ switch ($step) {
 		$mail->ClearCCs();
 		$mail->ClearBCCs();
 		if(isset($code_mailtester) && $code_mailtester!='') {
-			//$mail->AddAddress($code_mailtester.'@mail-tester.com');
-			$mail->AddAddress($code_mailtester);
+			$mail->AddAddress($code_mailtester.'@mail-tester.com');
 		}
 		$mail->AddAddress($addr);
 		$mail->XMailer = ' ';
@@ -189,7 +192,6 @@ switch ($step) {
 						return $new_url . (urlencode(@$matches[1] . $matches[2])) . '"';
 				},$message);
 			}
-			$message = add_alt_tags ($message) ;
 			if (strpos($message, '</body>') !== false) {
 				$message = str_replace('</body>', '', $message);
 				$message = str_replace('</html>', '', $message);
@@ -197,8 +199,8 @@ switch ($step) {
 			$headtrc = "<hr noshade='' color='#D4D4D4' width='90%' size='1'>"
 				. "<div align='center' style='font-size:12px;font-family:arial,helvetica,sans-serif;padding-bottom:5px;color:#878e83;'>"
 				. tr("READ_ON_LINE", "<a href='" . $row_config_globale['base_url'] . $tPath . "online.php?i=$msg_id&list_id=$list_id&email_addr="
-				. $addr . "&h=fake_hash'>") . "<br/>"
-				. tr("ADD_ADRESS_BOOK", $sender_email) . "<br/>";
+				. $addr . "&h=fake_hash'>") . "<br />"
+				. tr("ADD_ADRESS_BOOK", $sender_email) . "<br />";
 			$unsubLink = $headtrc . tr("UNSUBSCRIBE_LINK", "<a href='" . $row_config_globale['base_url'] . $tPath
 				. "subscription.php?i=$msg_id&list_id=$list_id&op=leave&email_addr=" . $addr
 				. "&h=fake_hash' style='' target='_blank'>")
@@ -206,8 +208,8 @@ switch ($step) {
 				. "</div></body></html>";
 		} else {
 			$body .= tr("READ_ON_LINE", "<a href='".$row_config_globale['base_url'].$tPath
-				  ."online.php?i=$msg_id&list_id=$list_id&email_addr=".$addr."&h=fake_hash'>")."<br/>";
-			$body .= tr("ADD_ADRESS_BOOK", $newsletter['from_addr'])."<br/>";
+				  ."online.php?i=$msg_id&list_id=$list_id&email_addr=".$addr."&h=fake_hash'>")."<br />";
+			$body .= tr("ADD_ADRESS_BOOK", $newsletter['from_addr'])."<br />";
 			$unsubLink = $row_config_globale['base_url'] . $tPath . "subscription.php?i=" .$msg_id. "&list_id=$list_id&op=leave&email_addr=" . urlencode($addr)."&h=fake_hash";
 		}
 
@@ -222,22 +224,15 @@ switch ($step) {
 			loggit($_SESSION['dr_id_user'].'.log', $_SESSION['dr_id_user'] . ' a envoyé une preview de la campagne "'.$subject.'" à "'.$addr.'"');
 		}
 		@set_time_limit(150);
-		$mail->SMTPDebug = 2;
-		ob_start();
-		$cache='logs/smtp_debug_' . $list_id . '.log';
-		try {
-			$mail->Send();
-		} catch (Exception $e) {
-			echo 'Caught a '. get_class($e) .': '. $e->getMessage();
-			die(tr("ERROR_SENDING"));
+		if( $type_env=='dev' ) { 
+			$mail->SMTPDebug  = 2;
 		}
-		$log_smtp=ob_get_contents();
-		ob_end_clean();
-		@unlink($cache);
-		file_put_contents($cache,$log_smtp);
-		if(!isset($dontlog)) $dontlog='';
-		header("location:index.php?page=compose&op=send_preview&error=$error&list_id=$list_id&errorlog=$dontlog&token=$token&encode=$encode");
-
+		if (!$mail->Send()) {
+			die(tr("ERROR_SENDING"));
+		}elseif($type_env=='prod'){
+			if(!isset($dontlog)) $dontlog='';
+			header("location:index.php?page=compose&op=send_preview&error=$error&list_id=$list_id&errorlog=$dontlog&token=$token&encode=$encode");
+		}
 		break;
 	default:
 		if(!isset($num)) $num='';
