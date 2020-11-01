@@ -1,4 +1,4 @@
-![PhpMyNewsLetter 2.0](https://www.phpmynewsletter.com/css/images/phpmynewsletter_v2.png) 
+![PhpMyNewsLetter 2.0](https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/phpmynewsletter_v2.png)
 phpmynewsletter 2.0
 ===================
 
