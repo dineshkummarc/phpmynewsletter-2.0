@@ -21,7 +21,7 @@
                                                                                             <!-- image -->
                                                                                             <tr>
                                                                                                 <td width="280" height="140" align="center" class="devicewidth">
-                                                                                                    <img st-image="left-image" src="//via.placeholder.com/280x140.png?text=280 x 140" alt="" border="0" width="280" style="display:block; border:none; outline:none; text-decoration:none;" class="col2img" />
+                                                                                                    <img st-image="left-image" src="https://placeholdit.imgix.net/~text?w=280&h=140" alt="" border="0" width="280" style="display:block; border:none; outline:none; text-decoration:none;" class="col2img" />
                                                                                                 </td>
                                                                                             </tr>
                                                                                             <!-- /image -->

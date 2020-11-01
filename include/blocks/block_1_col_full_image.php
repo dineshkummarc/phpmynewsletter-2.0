@@ -16,7 +16,7 @@
                                                                             <tr>
                                                                                 <!-- start of image -->
                                                                                 <td align="center">
-                                                                                    <a target="_blank" href="#"><img width="600" border="0" alt="" style="display:block; border:none; outline:none; text-decoration:none;" src="//via.placeholder.com/600x300.png?text=600 x 300" class="banner" st-image="banner" /></a>
+                                                                                    <a target="_blank" href="#"><img width="600" border="0" alt="" style="display:block; border:none; outline:none; text-decoration:none;" src="https://placeholdit.imgix.net/~text?w=600&h=300" class="banner" st-image="banner" /></a>
                                                                                 </td>
                                                                             </tr>
                                                                         </tbody>

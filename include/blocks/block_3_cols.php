@@ -25,7 +25,7 @@
                                                                                                             <!-- image -->
                                                                                                             <tr>
                                                                                                                 <td width="190" height="95" align="center" class="devicewidth">
-                                                                                                                    <img src="//via.placeholder.com/190x95.png?text=190 x 95" alt="" border="0" width="190" st-image="right-image" style="display:block; border:none; outline:none; text-decoration:none;" class="col2img" />
+                                                                                                                    <img src="https://placeholdit.imgix.net/~text?w=190&h=95" alt="" border="0" width="190" st-image="right-image" style="display:block; border:none; outline:none; text-decoration:none;" class="col2img" />
                                                                                                                 </td>
                                                                                                             </tr>
                                                                                                             <!-- /image -->
@@ -106,7 +106,7 @@
                                                                                                             <!-- image -->
                                                                                                             <tr>
                                                                                                                 <td width="190" height="95" align="center" class="devicewidth">
-                                                                                                                    <img src="//via.placeholder.com/190x95.png?text=190 x 95" alt="" border="0" width="190" st-image="right-image" style="display:block; border:none; outline:none; text-decoration:none;" class="col2img" />
+                                                                                                                    <img src="https://placeholdit.imgix.net/~text?w=190&h=95" alt="" border="0" width="190" st-image="right-image" style="display:block; border:none; outline:none; text-decoration:none;" class="col2img" />
                                                                                                                 </td>
                                                                                                             </tr>
                                                                                                             <!-- /image -->
@@ -187,7 +187,7 @@
                                                                                                             <!-- image -->
                                                                                                             <tr>
                                                                                                                 <td width="190" height="95" align="center" class="devicewidth">
-                                                                                                                    <img src="//via.placeholder.com/190x95.png?text=190 x 95" alt="" border="0" width="190" st-image="right-image" style="display:block; border:none; outline:none; text-decoration:none;" class="col2img" />
+                                                                                                                    <img src="https://placeholdit.imgix.net/~text?w=190&h=95" alt="" border="0" width="190" st-image="right-image" style="display:block; border:none; outline:none; text-decoration:none;" class="col2img" />
                                                                                                                 </td>
                                                                                                             </tr>
                                                                                                             <!-- /image -->
