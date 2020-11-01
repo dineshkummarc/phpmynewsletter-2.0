@@ -116,4 +116,3 @@ Support sur forum : https://www.phpmynewsletter.com/forum/.
 GNU GPL
 
 Mettez une étoile si vous aimez  ;-)
-
