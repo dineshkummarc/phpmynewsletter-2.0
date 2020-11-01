@@ -95,23 +95,23 @@ Send emails, add attachments, manage bounces, track clicks, openings, geolocatio
 # SCREENSHOT, PREVIEW
 
 ## Presentation in list management
-! [List Management] (https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/listoflist.png)
+![List Management](https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/listoflist.png)
 ## Presentation in vertical menu
-! [Vertical menu] (https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/vertical_menu.png)
+![Vertical menu](https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/vertical_menu.png)
 ## The new editor in Wysiwyg mode: drag and drop blocks, then customize them
-! [Editor in WysiWyg mode] (https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/wysiwyg.png)
+![Editor in WysiWyg mode](https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/wysiwyg.png)
 ## Presentation in vertical menu and view of user management
-! [Horizontal menu and user management of Phpmynewsletter] (https://www.phpmynewsletter.com/images/2.0.5/account_manager.png)
+![Horizontal menu and user management of Phpmynewsletter](https://www.phpmynewsletter.com/images/2.0.5/account_manager.png)
 ## The new management of user accounts from PhpMyNewsLetter
-! [Management of sender accounts] (https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/sender_account_manager.png)
+![Management of sender accounts](https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/sender_account_manager.png)
 ## Detailed management of user accounts
-! [Phpmynewsletter user management, details of rights management] (https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/account_manager_detail.png)
+![Phpmynewsletter user management, details of rights management](https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/account_manager_detail.png)
 ## Management of SMTPs for load balancing (several smtps = faster distribution of mails)
-! [Management of SMTPs for SMTP load balancing] (https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/config.png)
+![Management of SMTPs for SMTP load balancing](https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/config.png)
 ## Global statistics
-! [Statistics] (https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/full_stats.png)
+![Statistics](https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/full_stats.png)
 ## Access to user profiles
-! [User profiles] (https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/users_profils.png)
+![User profiles](https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/users_profils.png)
 
 # SUPPORT
 Support on forum: https://www.phpmynewsletter.com/forum/.
