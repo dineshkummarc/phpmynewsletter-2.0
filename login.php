@@ -6,15 +6,15 @@ if (!file_exists("include/config.php")) {
 } else {
 	include("_loader.php");
 }
-
+$row_config_globale = $cnx->SqlRow("SELECT * FROM $table_global_config");
 if(isset($_POST)&&count($_POST)>2) {
 	if(tok_val($_POST['token_connex'])){
-		$sub_mail = CleanInput($_POST['form_mail_admin']);
-		$sub_pass = CleanInput($_POST['form_pass']);
+		$sub_mail = $cnx->CleanInput($_POST['form_mail_admin']);
+		$sub_pass = $cnx->CleanInput($_POST['form_pass']);
 		$is_admin=current($cnx->query("SELECT count(*) AS is_admin
 						FROM $table_global_config 
-					WHERE admin_pass=".escape_string(md5($sub_pass))." 
-						AND admin_email=".escape_string($sub_mail).";")->fetch());
+					WHERE admin_pass=".escape_string($cnx,md5($sub_pass))." 
+						AND admin_email=".escape_string($cnx,$sub_mail).";")->fetch());
 		if($is_admin) {
 			$_SESSION['dr_liste']=0;
 			$_SESSION['dr_abonnes']='Y';
@@ -33,8 +33,8 @@ if(isset($_POST)&&count($_POST)>2) {
 		} else {
 			$is_user = $cnx->query('SELECT * 
 						FROM '.$row_config_globale['table_users'].'
-					WHERE password='.escape_string(md5($sub_pass)).'
-						AND email='.escape_string($sub_mail).' LIMIT 1;')->fetchAll(PDO::FETCH_ASSOC);
+					WHERE password='.escape_string($cnx,md5($sub_pass)).'
+						AND email='.escape_string($cnx,$sub_mail).' LIMIT 1;')->fetchAll(PDO::FETCH_ASSOC);
 			if (count($is_user) == 0){
 				header("Location: login.php");
 				die();
