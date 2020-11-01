@@ -7,6 +7,7 @@ if (!file_exists("include/config.php")) {
 	header("Location:install.php");
 	exit;
 } else {
+	session_start();
 	include("_loader.php");
 	if (file_exists("include/config_bounce.php")) {
 		include("include/config_bounce.php");
@@ -23,15 +24,18 @@ if (!file_exists("include/config.php")) {
 		die();
 	}
 }
-use PHPMailer;
-use Exception;
-require 'include/lib/PHPMailer/src/Exception.php';
-require 'include/lib/PHPMailer/src/PHPMailer.php';
-require 'include/lib/PHPMailer/src/SMTP.php';
-if ( $do_encrypt==1 ){
-	include('include/lib/class.encrypt.php');
-	$en = new Encrypt();
+$row_config_globale = $cnx->SqlRow("SELECT * FROM $table_global_config");
+(count($row_config_globale) > 0) ? $r = 'SUCCESS' : $r = '';
+if ($r != 'SUCCESS') {
+	include("include/lang/english.php");
+	echo "<div class='error'>" . tr($r) . "<br>";
+	echo "</div>";
+	exit;
 }
+if (empty($row_config_globale['language']))
+	$row_config_globale['language'] = "english";
+include("include/lang/" . $row_config_globale['language'] . ".php");
+require('include/lib/PHPMailerAutoload.php');
 $step         = (empty($_GET['step']) ? "" : $_GET['step']);
 $subject      = (!empty($_SESSION['subject'])) ? $_SESSION['subject'] : '';
 $message      = (!empty($_SESSION['message'])) ? $_SESSION['message'] : '';
@@ -53,14 +57,9 @@ $tPath        = ($row_config_globale['path'] == '' ? '/' : '/'.$row_config_globa
 $tPath        = str_replace('//','/',$tPath);
 switch ($step) {
 	case "send":
-		if (isset($force) && $force === true) {
+		if (isset($force) && $force == 'true')
 			touch('logs/__SEND_PROCESS__' . $list_id . '.pid');
-			$num = get_newsletter_total_subscribers($cnx, $row_config_globale['table_email'], $list_id, $msg_id);
-			$cnx->query("INSERT IGNORE into " . $row_config_globale['table_send'] . " (`id_mail`, `id_list`, `cpt`)
-					VALUES ('" . $msg_id . "','" . $list_id . "','0')");
-			$cnx->query("INSERT IGNORE into " . $row_config_globale['table_send_suivi'] . " (`list_id`, `msg_id`,`nb_send`, `total_to_send`, `tts`)
-					VALUES ('" . $list_id . "','" . $msg_id . "',0,'" . $num . "',0)");
-		}
+
 		if (!file_exists('logs/__SEND_PROCESS__' . $list_id . '.pid')) {
 			if ($_SESSION['dr_log'] == 'Y' && ($begin < $sn)) {
 				loggit($_SESSION['dr_id_user'] . '.log', $_SESSION['dr_id_user'] . ' a interrompu un envoi de campagne "' . $subject . '" par "' . $sender_email . '" en ajax');
@@ -77,9 +76,9 @@ switch ($step) {
 		if (!$handler = @fopen('logs/list' . $list_id . '-msg' . $msg_id . '.txt', 'a+')) {
 			$dontlog = 1;
 		}
-		$daylog = @fopen('logs/daylog-' . date("Y-m-d") . '.txt', 'a+');
-		$limit  = $row_config_globale['sending_limit'];
-		$mail   = new PHPMailer\PHPMailer\PHPMailer;
+		$daylog            = @fopen('logs/daylog-' . date("Y-m-d") . '.txt', 'a+');
+		$limit             = $row_config_globale['sending_limit'];
+		$mail              = new PHPMailer();
 		$mail->SMTPOptions = array(
 			'ssl' => array(
 				'verify_peer' => false,
@@ -91,23 +90,20 @@ switch ($step) {
 		$mail->ContentType	= "text/html";
 		$mail->Encoding		= "quoted-printable";
 		$mail->PluginDir	= "include/lib/";
-		$msg				= get_message($cnx, $row_config_globale['table_archives'], $msg_id);
-		$newsletter			= getConfigSender($cnx, $row_config_globale['table_senders'], $msg['sender_email']);
-		$sender_email		= @$newsletter['email'];
-		$sender_name		= @$newsletter['name_organisation'];
-		$reply_email		= @$newsletter['email_reply'];
+		$msg			= get_message($cnx, $row_config_globale['table_archives'], $msg_id);
+		$newsletter		= getConfigSender($cnx, $row_config_globale['table_senders'], $msg['sender_email']);
+		$sender_email		= $newsletter['email'];
+		$sender_name		= $newsletter['name_organisation'];
+		$reply_email		= $newsletter['email_reply'];
 		if (empty($sender_email)) {
 			$emptysender  	= getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
 			$sender_email 	= $emptysender['from_addr'];
 			$sender_name  	= $emptysender['from_name'];
 			$reply_email  	= $emptysender['from_addr'];
 		}
-		
 		// recherche du mail de bounce (retour des non distribués), du particulier au général, sinon, par défaut : $bounce_mail
-		$tmpBounce = @trim($newsletter['bounce_email']);
-		if(empty($tmpBounce)) {
-			$tmpBounceBase = trim($bounce_mail);
-			if (empty($tmpBounceBase)) { 			// from config_bounce.php : global desc
+		if (empty(trim($newsletter['bounce_email']))) { 		// from array $newsletter : particular desc
+			if (empty(trim($bounce_mail))) { 			// from config_bounce.php : global desc
 				$bounce_email = $emptysender['from_addr'];	// from array $emptysender : default desc
 			} else {
 				$bounce_email = $bounce_mail;
@@ -115,7 +111,6 @@ switch ($step) {
 		} else {
 			$bounce_email = $newsletter['bounce_email'];
 		}
-		
 		$mail->AddReplyTo($reply_email);
 		$mail->SetFrom($sender_email, $sender_name);
 		$mail->Sender = $bounce_email;
@@ -127,20 +122,19 @@ switch ($step) {
 		$format  = $msg['type'];
 		$list_pj = $cnx->query("SELECT *
 			FROM " . $row_config_globale['table_upload'] . "
-				WHERE list_id=" . $list_id . "
-				AND msg_id=" . $msg_id . "
+				WHERE list_id=$list_id
+				AND msg_id=$msg_id
 			ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
 		if (count($list_pj) > 0) {
 			foreach ($list_pj as $item) {
 				$mail->AddAttachment('upload/' . $item['name']);
 			}
 		}
-		
 		$message       = stripslashes($msg['message']);
 		$to_replace    = array("  ","\t","\n","\r","\0","\x0B","\xA0");
 		$subject       = stripslashes($msg['subject']);
 		$message       = str_replace($to_replace, " ", $message);
-		$message       = str_replace('*|MC_PREVIEW_TEXT|*','',$message);
+		
 		if (strpos($message, '</style>') === false) {
 			$message = '<style type="text/css"></style>' . $message;
 		}
@@ -169,8 +163,8 @@ switch ($step) {
 <meta name="description" content="' . $subject . '" />';
 		$message       = str_replace('<title>[[SUBJECT]]</title>', $header.'<title>' . $subject . '</title>', $message);
 		$preHeaderDesc = stripslashes($msg['preheader']);
-		$preHeader     = "<div class='preHeader' align='center' style='display:none !important;visibility:hidden;mso-hide:all;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;'>" . $preHeaderDesc . "</div>";
-		$message       = str_replace('</style>', '</style></head><body>'.$preHeader, $message);
+		$preHeader     = "<div class='preHeader' align='center' style='font-size:8px;font-family:arial,helvetica,sans-serif;padding-bottom:5px;color:#878e83;'>" . $preHeaderDesc . "</div>";
+		$message       = str_replace('</style>', ' .preHeader {display:none!important;}</style></head><body>'.$preHeader, $message);
 		$messageSource = str_replace("  ", " ", $message);
 		if ($format == "html") {
 			$mail->IsHTML(true);
@@ -189,9 +183,9 @@ switch ($step) {
 		$mail->SMTPKeepAlive  = true;
 		for ($i = 0; $i < $to_send; $i++) {
 			$last_id_send = $addr[$i]['id'];
-			/*$cnx->query("UPDATE " . $row_config_globale['table_send_suivi'] . "
+			$cnx->query("UPDATE " . $row_config_globale['table_send_suivi'] . "
 					SET nb_send=nb_send+1,last_id_send=" . $last_id_send . "
-						WHERE `msg_id`='" . $msg_id . "' AND `list_id`='" . $list_id . "'");*/
+						WHERE `msg_id`='" . $msg_id . "' AND `list_id`='" . $list_id . "'");
 			$time_info     = "";
 			$begintimesend = microtime(true);
 			$unsubLink     = "";
@@ -204,26 +198,16 @@ switch ($step) {
 			$view_last_send_mails .= $addr[$i]['email'];
 			include("include/lib/switch_smtp.php");
 			$mail->XMailer = ' ';
-			if ( $do_encrypt==1 ){
-				$tracked_mail = $en->encrypt($addr[$i]['email']);
-			} else {
-				$tracked_mail = $addr[$i]['email'];
-			}
 			$mail->addCustomHeader("List-Unsubscribe",'<'. $row_config_globale['base_url'] . $tPath . 'subscription.php?i=' . $msg_id . '&list_id='
-				. $list_id . '&op=leave&email_addr=' . $tracked_mail . '&h=' . $addr[$i]['hash'] . '>'
+				. $list_id . '&op=leave&email_addr=' . $addr[$i]['email'] . '&h=' . $addr[$i]['hash'] . '>'
 				. ( $sender_email != '' ? ', <mailto:' . $sender_email . '?subject=unsubscribe>' : '' )
 			);
 			if ($row_config_globale['active_tracking'] == '1') {
-				$trac = "<img style='border:0' src='" . $row_config_globale['base_url'] . $tPath . "trc.php?i=" . $msg_id . "&h="
-				. $addr[$i]['hash'] . "' width='1'  height='1 alt='" . $list_id . "' />";
+				$trac = "<img style='border:0' src='" . $row_config_globale['base_url'] . $tPath 
+					. "trc.php?i=" . $msg_id . "&h=" . $addr[$i]['hash'] . "' width='1'  height='1 alt='" . $list_id . "' />";
 			} else {
 				$trac = "";
 			}
-			$replacements_adds = array(
-				'({user_email})' => $addr[$i]['email'],
-				'({newsletter_id})' => $msg_id
-				);
-			$message = preg_replace( array_keys( $replacements_adds ), array_values( $replacements_adds ), $message );
 			if ($format == "html") {
 				if ( $row_config_globale['active_tracking'] == '1' ) {
 					$new_url = 'href="' . $row_config_globale['base_url'] . $tPath . 'r.php?m=' . $msg_id . '&h=' . $addr[$i]['hash'] . '&l=' . $list_id . '&r=';
@@ -232,7 +216,6 @@ switch ($step) {
 						return $new_url . (urlencode(@$matches[1] . $matches[2])) . '"';
 					}, $message);
 				}
-				$message = add_alt_tags ($message) ;
 				if (strpos($message, '</body>') !== false) {
 					$message = str_replace('</body>', '', $message);
 					$message = str_replace('</html>', '', $message);
@@ -240,17 +223,17 @@ switch ($step) {
 				$headtrc = "<hr noshade='' color='#D4D4D4' width='90%' size='1'>"
 							. "<div align='center' style='font-size:12px;font-family:arial,helvetica,sans-serif;padding-bottom:5px;color:#878e83;'>"
 							. tr("READ_ON_LINE", "<a href='" . $row_config_globale['base_url'] . $tPath . "online.php?i=$msg_id&list_id=$list_id&email_addr="
-							. $tracked_mail . "&h=" . $addr[$i]['hash'] . "'>") . "<br/>"
-							. tr("ADD_ADRESS_BOOK", $sender_email) . "<br/>";
+							. $addr[$i]['email'] . "&h=" . $addr[$i]['hash'] . "'>") . "<br />"
+							. tr("ADD_ADRESS_BOOK", $sender_email) . "<br />";
 				$unsubLink = $headtrc . tr("UNSUBSCRIBE_LINK", "<a href='" . $row_config_globale['base_url'] . $tPath
-							. "subscription.php?i=$msg_id&list_id=$list_id&op=leave&email_addr=" . $tracked_mail
+							. "subscription.php?i=$msg_id&list_id=$list_id&op=leave&email_addr=" . $addr[$i]['email']
 							. "&h=" . $addr[$i]['hash'] . "' style='' target='_blank'>")
 							. $trac
 							. "</div></body></html>";
 			} else {
-				$body = tr("READ_ON_LINE", "<a href='" . $row_config_globale['base_url'] . $tPath . "online.php?i=$msg_id&list_id=$list_id&email_addr=" . $tracked_mail . "&h=" . $addr[$i]['hash'] . "'>") . "<br/>";
-				$body .= tr("ADD_ADRESS_BOOK", $sender_email) . "<br/>";
-				$unsubLink = $row_config_globale['base_url'] . $tPath . "subscription.php?i=" . $msg_id . "&list_id=$list_id&op=leave&email_addr=" . urlencode($tracked_mail) . "&h=" . $addr[$i]['hash'];
+				$body = tr("READ_ON_LINE", "<a href='" . $row_config_globale['base_url'] . $tPath . "online.php?i=$msg_id&list_id=$list_id&email_addr=" . $addr[$i]['email'] . "&h=" . $addr[$i]['hash'] . "'>") . "<br />";
+				$body .= tr("ADD_ADRESS_BOOK", $sender_email) . "<br />";
+				$unsubLink = $row_config_globale['base_url'] . $tPath . "subscription.php?i=" . $msg_id . "&list_id=$list_id&op=leave&email_addr=" . urlencode($addr[$i]['email']) . "&h=" . $addr[$i]['hash'];
 			}
 			$subject       = (strtoupper($row_config_globale['charset']) == "UTF-8" ? $subject : iconv("UTF-8", $row_config_globale['charset'], $subject));
 			$body          = $message . $unsubLink ;
@@ -273,7 +256,7 @@ switch ($step) {
 				$ms_err_info = $mail->ErrorInfo;
 				$cnx->query("INSERT INTO " . $row_config_globale['table_email_deleted'] . "
 					(id,email,list_id,hash,error,status,type,categorie,short_desc,long_desc,campaign_id)
-					SELECT id,email,list_id,hash,'Y',NULL,'',NULL,'','" . CleanInput($ms_err_info) . "','" . $msg_id . "'
+					SELECT id,email,list_id,hash,'Y',NULL,'',NULL,'','" . $cnx->CleanInput($ms_err_info) . "','" . $msg_id . "'
 						FROM " . $row_config_globale['table_email'] . "
 							WHERE email='" . $addr[$i]['email'] . "'
 								AND list_id='" . $list_id . "'");
@@ -285,24 +268,24 @@ switch ($step) {
 			} else {
 				$view_last_send_mails .= ' <b>OK</b>';
 				$cnx->query("UPDATE " . $row_config_globale['table_email'] . "
-							SET campaign_id='" . $msg_id . "'
-						WHERE email='" . $addr[$i]['email'] . "'
-							AND list_id='" . $list_id . "'");
+								SET campaign_id='" . $msg_id . "'
+							WHERE email='" . $addr[$i]['email'] . "'
+								AND list_id='" . $list_id . "'");
 				$cnx->query("UPDATE " . $row_config_globale['table_send'] . "
-							SET cpt=cpt+1
-						WHERE `id_mail`='" . $msg_id . "'
-							AND `id_list`='" . $list_id . "'");
+								SET cpt=cpt+1
+							WHERE `id_mail`='" . $msg_id . "'
+								AND `id_list`='" . $list_id . "'");
 				$ms_err_info = 'OK';
 				$daylogmsg   = date("Y-m-d H:i:s") . " : envoi à " . $addr[$i]['email'] . " OK\n";
 				fwrite($daylog, $daylogmsg, strlen($daylogmsg));
 			}
-			$view_last_send_mails .= '<br/>';
+			$view_last_send_mails .= '<br>';
 			$cnx->query("UPDATE " . $row_config_globale['table_send_suivi'] . "
 						SET nb_send=nb_send+1,last_id_send=" . $addr[$i]['id'] . "
-					WHERE `msg_id`='" . $msg_id . "' AND `list_id`='" . $list_id . "'");
+							WHERE `msg_id`='" . $msg_id . "' AND `list_id`='" . $list_id . "'");
 			$endtimesend = microtime(true);
 			$time_info   = substr(($endtimesend - $begintimesend), 0, 5);
-			$errstr      = date("Y-m-d H:i:s") . "\tID: " . $addr[$i]['id'] . "\t" . $time_info . "\t\t " . $ms_err_info . " \t" . $addr[$i]['email'] . "\r\n";
+			$errstr      = date("Y-m-d H:i:s") . "\tID : " . $addr[$i]['id'] . "\t" . $time_info . "\t\t " . $ms_err_info . " \t" . $addr[$i]['email'] . "\r\n";
 			if (!$dontlog) {
 				fwrite($handler, $errstr, strlen($errstr));
 			}
@@ -323,41 +306,27 @@ switch ($step) {
 				'token' => $token,
 				'pct' => number_format((($begin / $sn) * 100), 2),
 				'TTS' => $tts,
-				'force' => false,
+				'force' => 'false',
 				'view_last_send_mails' => $view_last_send_mails
 			);
 			echo json_encode($arr);
 			$cnx->query("UPDATE " . $row_config_globale['table_send_suivi'] . "
-					SET tts=tts+'" . $tts . "',last_id_send='" . $last_id_send . "'
-				WHERE list_id='" . $list_id . "' 
-					AND msg_id='" . $msg_id . "'");
+						SET tts=tts+'" . $tts . "',last_id_send='" . $last_id_send . "',nb_send=nb_send+" . $to_send . "
+							WHERE list_id='" . $list_id . "'
+								AND msg_id='" . $msg_id . "'");
 		} else {
-			clearstatcache();
-			if (file_exists('logs/__SEND_PROCESS__' . $list_id . '.pid')) {
-				if ( unlink('logs/__SEND_PROCESS__' . $list_id . '.pid')===TRUE ) {
-					$result_tts_for_sending = $cnx->query('SELECT tts FROM ' . $row_config_globale['table_send_suivi'] . ' 
-							WHERE msg_id=' . $msg_id . '
-								AND list_id=' . $list_id )->fetch(PDO::FETCH_ASSOC);
-					$result_count_for_sending = $cnx->query('SELECT cpt,error FROM ' . $row_config_globale['table_send'] . ' 
-							WHERE id_mail=' . $msg_id . '
-								AND id_list=' . $list_id )->fetch(PDO::FETCH_ASSOC);
-					$finalmsg = "------------------------------------------------------------\r\n";
-					$finalmsg .= "Finished at " . date("Y-m-d H:i:s") . "\r\n";
-					$finalmsg .= "============================================================\r\n";
-					$finalmsg .= "Temps utilisateur (en secondes)     : " . $result_tts_for_sending['tts'] . "\n";
-					$finalmsg .= "Mails envoyés                       : " . $result_count_for_sending['cpt'] . "\n";
-					$finalmsg .= "Mails en erreur                     : " . $result_count_for_sending['error'] . "\n";
-					if (!$dontlog) {
-						fwrite($handler, $finalmsg, strlen($finalmsg));
-						fclose($handler);
-						$finalmsg = '' ;
-					}
-				}
+			unlink('logs/__SEND_PROCESS__' . $list_id . '.pid');
+			$errstr = "------------------------------------------------------------\r\n";
+			$errstr .= "Finished at " . date("Y-m-d H:i:s") . "\r\n";
+			$errstr .= "============================================================\r\n";
+			if (!$dontlog) {
+				fwrite($handler, $errstr, strlen($errstr));
+				fclose($handler);
 			}
 			if ($_SESSION['dr_log'] == 'Y') {
 				loggit($_SESSION['dr_id_user'] . '.log', $_SESSION['dr_id_user'] . ' a fini un envoi de campagne "' . $subject . '" par "' . $sender_email . '" en ajax');
 			}
-			$daylogmsg = date("Y-m-d H:i:s") . " : fin globale de l envoi du message $msg_id, sujet \"" . $subject . "\", sur liste " . $list_id . "\n";
+			$daylogmsg = date("Y-m-d H:i:s") . " : fin globale de l envoi du message $msg_id, sujet \"$subject\", sur liste $list_id\n";
 			fwrite($daylog, $daylogmsg, strlen($daylogmsg));
 			$arr = array(
 				'step' => 'send',
@@ -371,7 +340,7 @@ switch ($step) {
 				'pct' => 100,
 				'TTS' => $tts,
 				'view_last_send_mails' => $view_last_send_mails,
-				'force' => false
+				'force' => 'false'
 			);
 			echo json_encode($arr);
 		}
@@ -384,6 +353,7 @@ switch ($step) {
 		$sender_email	= $_SESSION['sender_email'];
 		$draft		= $_SESSION['draft'];
 		$preheader	= $_SESSION['preheader'];
+
 		if ($_SESSION['dr_log'] == 'Y') {
 			loggit($_SESSION['dr_id_user'] . '.log', $_SESSION['dr_id_user'] . ' a commencé un envoi de campagne "' . $subject . '" par "' . $sender_email . '" en ajax');
 		}
@@ -398,16 +368,16 @@ switch ($step) {
 		fwrite($daylog, $daylogmsg, strlen($daylogmsg));
 		$cnx->query("UPDATE " . $row_config_globale['table_upload'] . "
 				SET msg_id=" . $msg_id . "
-				WHERE list_id=" . $list_id . "
+			WHERE list_id=" . $list_id . "
 				AND msg_id=0");
 		$daylogmsg = "\r\n**********************************************************\r\n" . $date . " : initialisation envoi message $msg_id liste $list_id\n";
 		fwrite($daylog, $daylogmsg, strlen($daylogmsg));
 		touch('logs/__SEND_PROCESS__' . $list_id . '.pid');
 		$num = get_newsletter_total_subscribers($cnx, $row_config_globale['table_email'], $list_id, $msg_id);
 		$cnx->query("INSERT into " . $row_config_globale['table_send'] . " (`id_mail`, `id_list`, `cpt`)
-				VALUES ('" . $msg_id . "','" . $list_id . "','0')");
-		$cnx->query("INSERT into " . $row_config_globale['table_send_suivi'] . " (`list_id`, `msg_id`,`nb_send`, `total_to_send`, `tts`)
-				VALUES ('" . $list_id . "','" . $msg_id . "',0,'" . $num . "',0)");
+						 VALUES ('" . $msg_id . "','" . $list_id . "','0')");
+		$cnx->query("INSERT into " . $row_config_globale['table_send_suivi'] . " (`list_id`, `msg_id`, `total_to_send`)
+						 VALUES ('" . $list_id . "','" . $msg_id . "','" . $num . "')");
 		$errstr = "=GLOBAL=ENVIRONNEMENT=======================================\r\n";
 		if (version_compare(PHP_VERSION, '5.3.0', '>')) {
 			$errstr .= "PHP : " . phpversion() . " " . tr("OK_BTN") . "\r\n";
@@ -432,7 +402,7 @@ switch ($step) {
 		$errstr .= "============================================================\r\n";
 		$errstr .= date("d M Y") . "\r\n";
 		$errstr .= "Started at " . date("Y-m-d H:i:s") . "\r\n";
-		$errstr .= "Date \t\t\t\t ID \t\t  Time \t\t Status \t\t Recipient  \r\n";
+		$errstr .= "N° \t Date \t\t Time \t\t Status \t\t Recipient  \r\n";
 		$errstr .= "------------------------------------------------------------\r\n";
 		if (!$dontlog) {
 			fwrite($handler, $errstr, strlen($errstr));
@@ -451,7 +421,7 @@ switch ($step) {
 			'sn' => (($num) + 0),
 			'token' => $token,
 			'pct' => 0,
-			'force' => 'continue'
+			'force' => $force
 		));
 		break;
 }
