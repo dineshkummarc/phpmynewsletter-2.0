@@ -101,7 +101,7 @@ Send emails, add attachments, manage bounces, track clicks, openings, geolocatio
 ## The new editor in Wysiwyg mode: drag and drop blocks, then customize them
 ![Editor in WysiWyg mode](https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/wysiwyg.png)
 ## Presentation in vertical menu and view of user management
-![Horizontal menu and user management of Phpmynewsletter](https://www.phpmynewsletter.com/images/2.0.5/account_manager.png)
+![Horizontal menu and shippment management of Phpmynewsletter](https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/planned-shipment.png)
 ## The new management of user accounts from PhpMyNewsLetter
 ![Management of sender accounts](https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/sender_account_manager.png)
 ## Detailed management of user accounts
