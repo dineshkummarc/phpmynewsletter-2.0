@@ -18,6 +18,7 @@ Send emails, add attachments, manage bounces, track clicks, openings, geolocatio
  - And your little hands to write pretty emails and run great campaigns!
 
 # CHANGELOG:
+
 ## GENERAL:
 - Full PHP 7 compatibility
 
@@ -34,6 +35,7 @@ Send emails, add attachments, manage bounces, track clicks, openings, geolocatio
 - Correction of the attachment of DKIM keys
 - Correction of the processing of bounce mails
 - Addition of the calculation of the table prefix (ex: "pmnl2_") in the config for finer table management
+
 ## NEWS:
 - Subject fields passed in utf8mb4 to allow use of Emojis
 - Pre-Header management
@@ -51,30 +53,39 @@ Send emails, add attachments, manage bounces, track clicks, openings, geolocatio
 
 ## BUILT-IN TOOLS:
 - Phpmailer 5.2.26
+
 ## IMPROVEMENTS:
 - Better management of the comparison of versions for possible updates of minor versions
 - Display of emails in error by list
 - Subscription html code switched in the newsletters settings
+
 ## TRACKING MANAGEMENT:
 - Geolocation of openings (amcharts)
 - Display of clicked links in modal
+
 ## MANAGEMENT OF SENT MESSAGES:
 - Removal of the phpmynewsletter 2.0 mention at the bottom of sent emails
 - Addition of REPLY and BOUNCE emails
+
 ## MANAGEMENT OF PLANNED TASKS:
 - Fixed the deletion bug of the scheduled task
+
 ## LOGS MANAGEMENT:
 - Correction of the offset in the columns when there is no log file present
 - Display of logs in modal
+
 ## SUBSCRIBER MANAGEMENT:
 - Calculation of subscriber profile (Subscriber profiles section)
 - Pagination of the list of subscribers in error in ajax
+
 ## SMTP MANAGEMENT:
 - Possible modification of a declared smtp
 - Reset counters to 0 (load balancing smtp) during the preview
+
 ## EDITORIAL MANAGEMENT:
 - Addition of responsive templates (from TinyMCE)
 - "pmnl" theme of TinyMCE writing tools
+
 ## BOUNCES MANAGEMENT:
 - Fixed the bug that prevented the correct deletion of erroneous emails
 - Addition of the possibility of a different bounce email from the sender (alias of a Return Path)
@@ -82,22 +93,25 @@ Send emails, add attachments, manage bounces, track clicks, openings, geolocatio
 - Improvement of REGEXP for retrieving bounce mails on Exchange type mail servers
 
 # SCREENSHOT, PREVIEW
+
+## Presentation in list management
+! [List Management] (https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/listoflist.png)
 ## Presentation in vertical menu
-! [Vertical menu] (https://www.phpmynewsletter.com/images/2.0.5/vertical_menu.png)
+! [Vertical menu] (https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/vertical_menu.png)
 ## The new editor in Wysiwyg mode: drag and drop blocks, then customize them
-! [Editor in WysiWyg mode] (https://www.phpmynewsletter.com/images/2.0.5/wysiwyg.png)
+! [Editor in WysiWyg mode] (https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/wysiwyg.png)
 ## Presentation in vertical menu and view of user management
 ! [Horizontal menu and user management of Phpmynewsletter] (https://www.phpmynewsletter.com/images/2.0.5/account_manager.png)
 ## The new management of user accounts from PhpMyNewsLetter
-! [Management of sender accounts] (https://www.phpmynewsletter.com/images/2.0.5/account_manager.png)
+! [Management of sender accounts] (https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/sender_account_manager.png)
 ## Detailed management of user accounts
-! [Phpmynewsletter user management, details of rights management] (https://www.phpmynewsletter.com/images/2.0.5/account_manager_detail.png)
+! [Phpmynewsletter user management, details of rights management] (https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/account_manager_detail.png)
 ## Management of SMTPs for load balancing (several smtps = faster distribution of mails)
-! [Management of SMTPs for SMTP load balancing] (https://www.phpmynewsletter.com/images/2.0.5/1.jpg)
+! [Management of SMTPs for SMTP load balancing] (https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/config.png)
 ## Global statistics
-! [Statistics] (https://www.phpmynewsletter.com/images/2.0.5/full_stats.png)
+! [Statistics] (https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/full_stats.png)
 ## Access to user profiles
-! [User profiles] (https://www.phpmynewsletter.com/images/2.0.5/users_profils.png)
+! [User profiles] (https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/users_profils.png)
 
 # SUPPORT
 Support on forum: https://www.phpmynewsletter.com/forum/.
@@ -116,4 +130,5 @@ Support on forum: https://www.phpmynewsletter.com/forum/.
 # LICENSE
 GNU GPL
 
+# SPONSER
 Put a star if you like ;-)
