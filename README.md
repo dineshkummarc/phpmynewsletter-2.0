@@ -5,7 +5,7 @@ phpmynewsletter 2.0
 # VERSION COURANTE : 2.0.5
  
 # INSTALLATION
-Télécharger le fichier zip : https://github.com/Arnaud69/phpmynewsletter-2.0/archive/master.zip
+Télécharger le fichier zip: 
 Dézipper dans un répertoire ou à la racine d'un sous-domaine dédié aux newsletter, appelez le script install.php depuis votre navigateur, remplissez les champs, et suivez la procédure.
 
 # SYNOPSIS
