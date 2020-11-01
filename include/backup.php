@@ -53,27 +53,30 @@ $(document).ready(function() {
 <?php
 $backup_dir = "include/backup_db";
 $files = array_slice ( scandir ( $backup_dir ), 2 );
-echo '<div class="row">
+?>
+<div class="row">
 	<div class="col-lg-12">
-		<header><h4>' . count($files) . ' sauvegarde(s) de la base de données PhpMyNewsLetter</h4></header>
-		<div class="col-mg-12">';
-		if(count($files)>0){
-			foreach ($files as $file ) {
-				echo '<i class="glyphicon glyphicon-compressed""></i>&nbsp;<a href="include/ajax/pmnl_backup_dl.php?token='
-				 . $token . '&t=' . $file . '">Sauvegarde du ' . date("d-m-Y", filemtime('include/backup_db/' . $file)) . ' à '. date("H:i:s", filemtime('include/backup_db/' . $file)) . '</a><br>';
+		<header><h4><?php echo count($files); ?> sauvegarde(s) de la base de données PhpMyNewsLetter</h4></header>
+		<div class="col-mg-12">
+		<?php
+			if(count($files)>0){
+				foreach ($files as $file ) {
+					$splfile = preg_split ("/[-]+/", $file); 
+					echo '<i class="glyphicon glyphicon-compressed""></i>&nbsp;<a href="include/ajax/pmnl_backup_dl.php?token='
+					 . $token . '&t=' . $file . '">Sauvegarde du ' . date("d-m-Y", strtotime($splfile[1])) . ' à '. date("H:i:s", strtotime($splfile[2])) . '</a><br>';
+				}
+			} else {
+				echo 'Pas de sauvegarde disponible';
 			}
-		} else {
-			echo 'Pas de sauvegarde disponible';
-		}
-
-echo '		</div>
+		?>
+		</div>
 		<div class="col-mg-12 text-center">
 			<input class="btn btn-success" type="button" id="pmnl_back_up_db" value=" Démarrer la sauvegarde " /><br /><br />
-			<input type="hidden" id="token" value="' . $token . '" />
+			<input type="hidden" id="token" value="<?php echo $token; ?>" />
 		</div>
 		
 	</div>
 	<div class="panel col-lg-12">
 		<div class="col-mg-12 text-center" id="resultbackupdatabase"></div>
 	</div>
-</div>';
+</div>
