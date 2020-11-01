@@ -35,7 +35,7 @@ class BackupMySQL extends mysqli {
 			$this->message('error','Erreur de dossier &quot;' . htmlspecialchars($this->dossier) . '&quot;');
 			return;
 		}
-		$this->nom_fichier = $nom_fichier .'-'. date('Ymd-His') . '.sql.gz';
+		$this->nom_fichier = $nom_fichier .'-'. date('Ymd-His') . '-' . $token . '.sql.gz';
 		$this->gz_fichier = @gzopen($this->dossier . $this->nom_fichier, 'w');
 		if ( !$this->gz_fichier) {
 			$this->message('error','Erreur de fichier &quot;' . htmlspecialchars($this->nom_fichier) . '&quot;');
@@ -124,5 +124,6 @@ class BackupMySQL extends mysqli {
 				unlink($this->dossier . $fichiers[$i]);
 			}
 		}
-	}	
+	}
+	
 }
