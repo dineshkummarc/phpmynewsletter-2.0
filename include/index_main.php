@@ -11,49 +11,49 @@ switch ($page){
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "globalstats":
 		if($_SESSION['dr_stats']=='Y'||$_SESSION['dr_is_admin']==true) {
 			require("include/globalstats.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "manage_senders":
 		if($_SESSION['dr_is_admin']==true) {
 			require("include/manage_senders.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "archives":
 		if($_SESSION['dr_redaction']=='Y'||$_SESSION['dr_is_admin']==true) {
 			require("include/archives.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "config":
 		if($_SESSION['dr_is_admin']==true) {
 			require("include/globalconf.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "compose":
 		if($_SESSION['dr_redaction']=='Y'||$_SESSION['dr_is_admin']==true) {
 			require("include/compose.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "wysiwyg":
 		if($_SESSION['dr_redaction']=='Y'||$_SESSION['dr_is_admin']==true) {
 			require("include/wysiwyg.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "undisturbed":
 		if($_SESSION['dr_bounce']=='Y'||$_SESSION['dr_is_admin']==true) {
 			if(file_exists("include/config_bounce.php")){
@@ -66,100 +66,98 @@ switch ($page){
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "tracking":
 		if($_SESSION['dr_stats']=='Y'||$_SESSION['dr_is_admin']==true) {
 			require("include/tracking.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "subscribers":
 		if($_SESSION['dr_abonnes']=='Y'||$_SESSION['dr_is_admin']==true) {
 			require("include/subscribers.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "profils":
 		if($_SESSION['dr_abonnes']=='Y'||$_SESSION['dr_is_admin']==true) {
 			require("include/subscribers_profils.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "manage":
 		if($_SESSION['dr_abonnes']=='Y'||$_SESSION['dr_is_admin']==true) {
 			require("include/manage_emails.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "task":
 		if ($_SESSION['dr_envois']=='Y'||$_SESSION['dr_is_admin']==true) {
 			require("include/manage_cron.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "manager_global_cron":
 		if ($_SESSION['dr_envois']=='Y'||$_SESSION['dr_is_admin']==true) {
 			require("include/manager_global_cron.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "manager_mailq":
 		if ($_SESSION['dr_envois']=='Y'||$_SESSION['dr_is_admin']==true) {
 			require("include/manager_mailq.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "configsmtp":
 		if($_SESSION['dr_is_admin']==true) {
 			require("include/manager_smtp.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "backup":
 		if($_SESSION['dr_is_admin']==true) { 
 			require("include/backup.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "manage_users":
 		if($_SESSION['dr_is_admin']==true) { 
 			require("include/manage_users.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	case "newsletterconf":
 		if ($_SESSION['dr_listes']=='Y'||$_SESSION['dr_is_admin']==true) {
 			require("include/newsletterconf.php");
 		} else {
 			echo $refusAcces;
 		}
-		break;
+	break;
 	default:
 		echo '<div class="row"><div class="col-md-12 alert alert-info">Il semble que la page demandée n\'existe pas...</div></div>';
 	case 'about':
 		include("include/about.php");
-		break;
+	break;
 }
-echo '
+?>
 <div class="row">
 	<div class="col-md-4 col-md-offset-4">
 		<div class="logo" style="text-align:center">
-			<h1><a href="https://www.phpmynewsletter.com/" target="_blank" data-toggle="tooltip" data-placement="auto" title="PhpMyNewsLetter ' 
-			. $pmnl_version . '">&copy; 2014-' . date('Y') . ' PhpMyNewsLetter v.' . $pmnl_version . '</a></h1>
+			<h1><a href="https://www.phpmynewsletter.com/" target="_blank" data-toggle="tooltip" data-placement="auto" title="PhpMyNewsLetter <?php echo $pmnl_version; ?>">&copy; 2017 PhpMyNewsLetter v.<?php echo $pmnl_version; ?></a></h1>
 		</div>
 	</div>
-</div>';
-
+</div>
 
 
 
