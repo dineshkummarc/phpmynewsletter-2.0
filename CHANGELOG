@@ -1,47 +1,3 @@
-v2.0.6
-                            GENERAL :
-                            CORRECTIONS :
-                            * Correction du nombre de mails envoyés pendant un envoi planifié ou en ajax, ainsi que le time to send (tts)
-                            * Correction du rattachement des stats d'un email envoyé dans le cadre d'un rattrapage
-                            * Correction des liens cliquables dans la page de visualisation d'un mail online
-                            * Correction des lignes à vide dans la crontab (plus de doubles lignes)
-                            * Correction du calcul des dates et heures des sauvegardes
-                            * Test du domaine en mailqueue pour n'afficher que les mails en attente sur le domaine de gestion en cours
-                            (problèmatique des serveurs dédiés qui hébergent plusieurs domaines, et donc affichage intempestif de mails en mailqueue 
-                            alors qu'ils appartiennent à un autre domaine)
-                            * Affichage de la mailqueue uniquement si le binaire linux mailq est présent et détecté
-                            * Correction du bug de map vide sur code pays non connu
-                            * Correction du bug d'affichage des heures d'ouverture des mails
-                            * Correction du bug sur les images en https dans le filemanager
-                            * Amélioration du détail des erreurs détéctées dans le test des liens d'une composition (lien 404, site KO, etc...)
-                            * Revue complète de la présentation des statistiques et amélioration des calculs
-                            * Passage automatique d'une campagne marquée comme en cours à terminée si il n'y a pas de détection d'envoi en cours
-                            * Suppression de la fonction get_magic_quotes_gpc obsolète php7.4
-                            NOUVEAUTES :
-                            * Suppression d'un email sur toutes les listes depuis l'administration comme depuis une désinscription
-                            * Détail de l'activité d'un contact (campagnes adressées, ouvertures, lectures)
-                            * Test des images sans balise ALT lors du test des liens
-                            * Ajout automatique d'une balise ALT aux images (<img src... />) qui n'en contiennent pas (-0,5 point aux tests spam)
-                            * Log du mail de preview accessible après envoi de ce mail
-                            * Choix des dates pour afficher des périodes de statistiques (globales et par liste)
-                            * Possibilité de mise en pause, de reprise ou d'arrêt d'un envoi planifié en cours 
-                            OUTILS INTEGRES :
-                            * Upgrade de PHPMailer 6.1.4 (https://github.com/PHPMailer/PHPMailer)
-                            * Upgrade de class.browser @version 1.9.4 (https://github.com/cbschuld/Browser.php)
-                            * Upgrade de Html2Text.php (https://github.com/mtibben/html2text)
-                            AMELIORATIONS :
-                            * Bootstrap 3.4.1
-                            * La version 2.0.5 de PhpMyNewsLetter se voulait novatrice en design, la 2.0.6 est allégée des composants inutilisés 
-                            pour rester à l'essentiel :
-                            -> suppression du loader
-                            -> suppression du menu vertical, menu horizontal définitivement adopté
-                            * Revue complète du code en PDO natif PHP
-                            * Ajout de modèles de mobiles lors du test responsive
-                            * Détail des versions Outlook dans les stats
-                            TODO: 
-                            -> Crontab pour mutualisé
-                            -> Gestion des dkim
-                            -> Faire un bouton d'optimisation des tables
 v2.0.5
                             GENERAL :
                             * Compatibilité PHP 7 totale
@@ -220,7 +176,7 @@ v2.0.2
 
 01/05/2014  v2.0.1
                             * Correction des bugs de la version beta
-                            * Auto-suggestion dans la recherche d'un mail pour les listes > 500 mails
+                            * auto-suggestion dans la recherche d'un mail pour les listes > 500 mails
                           
 12/02/2014  v2.0beta1     
                             PHP :
