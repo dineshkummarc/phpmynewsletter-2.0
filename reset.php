@@ -8,26 +8,64 @@ if(!file_exists("include/config.php")){
 } else{
 	include("_loader.php");
 }
-
-use PHPMailer;
-use Exception;
-require 'include/lib/PHPMailer/src/Exception.php';
-require 'include/lib/PHPMailer/src/PHPMailer.php';
-require 'include/lib/PHPMailer/src/SMTP.php';
-
+$row_config_globale = $cnx->SqlRow("SELECT * FROM $table_global_config");
+(count($row_config_globale)>0)?$r='SUCCESS':$r='';
+if($r != 'SUCCESS'){
+	include("include/lang/english.php");
+	echo "<div class='error'>".tr($r)."<br>";
+	echo "</div>";
+	exit;
+}
+require('include/lib/PHPMailerAutoload.php');
 $tPath        = ($row_config_globale['path'] == '' ? '/' : '/'.$row_config_globale['path']);
 $tPath        = str_replace('//','/',$tPath);
 if(isset($_GET['x'])) {
 	$is_admin=current($cnx->query("SELECT count(*) AS is_admin
 		FROM $table_global_config 
-			WHERE lost_pass=" . escape_string(CleanInput($_GET['x'])) . " 
-				AND admin_email=" . escape_string(CleanInput($_GET['m'])) . ";")->fetch());
+			WHERE lost_pass=" . escape_string($cnx,$cnx->CleanInput($_GET['x'])) . " 
+				AND admin_email=" . escape_string($cnx,$cnx->CleanInput($_GET['m'])) . ";")->fetch());
 	if($is_admin) {
+		function randomPassword($length,$count, $characters) {
+			// $length - the length of the generated password
+			// $count - number of passwords to be generated
+			// $characters - types of characters to be used in the password
+			// define variables used within the function
+			/* USAGE :
+			// generate one password using 5 upper and lower case characters
+			randomPassword(5,1,"lower_case,upper_case");
+			// generate three passwords using 10 lower case characters and numbers
+			randomPassword(10,3,"lower_case,numbers");
+			// generate five passwords using 12 lower case and upper case characters, numbers and special symbols
+			randomPassword(12,5,"lower_case,upper_case,numbers,special_symbols");
+			*/  
+			$symbols = array();
+			$passwords = array();
+			$used_symbols = '';
+			$pass = '';
+			$symbols["lower_case"] = 'abcdefghijklmnopqrstuvwxyz';
+			$symbols["upper_case"] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+			$symbols["numbers"] = '1234567890';
+			$symbols["special_symbols"] = '!?~@#-_+<>[]{}';
+			$characters = explode(",",$characters); // get characters types to be used for the passsword
+			foreach ($characters as $key=>$value) {
+				$used_symbols .= $symbols[$value]; // build a string with all characters
+			}
+			$symbols_length = strlen($used_symbols) - 1; //strlen starts from 0 so to get number of characters deduct 1
+			for ($p = 0; $p < $count; $p++) {
+				$pass = '';
+				for ($i = 0; $i < $length; $i++) {
+					$n = rand(0, $symbols_length); // get a random character from the string with all characters
+					$pass .= $used_symbols[$n]; // add the character to the password string
+				}
+				$passwords[] = $pass;
+			}
+			return $passwords; // return the generated password
+		}
 		$new_pass=randomPassword(12,1,"lower_case,upper_case,numbers,special_symbols");
 		$cnx->query("UPDATE " . $table_global_config. " 
 			SET admin_pass='" . md5($new_pass[0]). "' 
-				WHERE admin_email=" . escape_string(CleanInput($_GET['m'])). "
-					AND lost_pass=" . escape_string(CleanInput($_GET['x'])));
+				WHERE admin_email=" . escape_string($cnx,$cnx->CleanInput($_GET['m'])). "
+					AND lost_pass=" . escape_string($cnx,$cnx->CleanInput($_GET['x'])));
 		$subj = 'Nouveau mot de passe / reset password !';
 		$lost_msg = '<br /><br /><br /><br /><br />
 			<table style="height: 217px; margin-left: auto; margin-right: auto;" width="660">
@@ -50,8 +88,8 @@ if(isset($_GET['x'])) {
 	}	
 }
 $is_admin=current($cnx->query("SELECT count(*) AS is_admin
-		FROM " . $table_global_config . "
-			WHERE admin_email=" . escape_string(CleanInput($_POST['form_mail_admin'])) . ";")->fetch());
+		FROM $table_global_config 
+			WHERE admin_email=" . escape_string($cnx,$cnx->CleanInput($_POST['form_mail_admin'])) . ";")->fetch());
 if($is_admin) {
 	function random_str($length){
 		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -65,8 +103,8 @@ if($is_admin) {
 	$chaine_pass = random_str(32);
 	$link_reset = $row_config_globale['base_url'] . $tPath . "reset.php?x=" . $chaine_pass . "&m=" . $_POST['form_mail_admin'];
 	$cnx->query("UPDATE " . $table_global_config. " 
-			SET lost_pass=" . escape_string($chaine_pass). " 
-				WHERE admin_email='" . CleanInput($_POST['form_mail_admin']) . "'");
+			SET lost_pass=" . escape_string($cnx,$chaine_pass). " 
+				WHERE admin_email='" . $cnx->CleanInput($_POST['form_mail_admin']). "'");
 	$subj = 'Mot de passe perdu / lost password !';
 	$lost_msg = '<br /><br /><br /><br /><br />
 		<table style="height: 217px; margin-left: auto; margin-right: auto;" width="660">
