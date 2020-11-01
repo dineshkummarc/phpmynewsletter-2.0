@@ -8,274 +8,216 @@ switch ($l) {
 			echo '<header><h4>' . tr("LIST_OF_LISTS") . '</h4></header>';
 			if (($_SESSION['dr_listes'] == 'Y' && $_SESSION['dr_liste'] == '') || $_SESSION['dr_is_admin'] == true) {
 				echo '<div style="margin-bottom:7px;"><a href="?page=listes&token=' . $token . '&l=c" data-toggle="tooltip"
-					title="'. tr("CREATE_NEW_LIST") . '"><button type="button" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-plus"></i>&nbsp;'
-					. tr("CREATE_NEW_LIST") . '</button></a></div>
-					<form action="" method="post">';
+					title="Créer une nouvelle liste"><button type="button" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-plus"></i>&nbsp;'
+					. tr("CREATE_NEW_LIST") . '</button></a></div>';
 			}
-			echo '<table cellpadding="0" cellspacing="0" border="0" class="display" id="datatable">';
+			echo '<form action="" method="post">';
+			echo '<table  cellpadding="0" cellspacing="0" border="0" class="display" id="datatable">';
 			$trtheadfooter = '<tr>
-				<th class="text-center">' . tr("LIST_NAME") . '</th>
-				<th class="text-center">ID</th>
-				<th></th>
-				<th class="text-center">' . tr("LIST_COUNT_SUSCRIBERS") . '</th>
-				<th class="text-center">Bounces</th>
-				<th class="text-center">' . tr("NEWSLETTER_UNSUBSCRIPTION") . '</th>';
+					<th style="text-align:center">' . tr("LIST_NAME") . '</th>
+					<th></th>
+					<th style="text-align:center">' . tr("LIST_COUNT_SUSCRIBERS") . '</th>
+					<th style="text-align:center">Bounces</th>
+					<th style="text-align:center">Désinscription</th>';
 			if ($_SESSION['dr_stats'] == 'Y' || $_SESSION['dr_is_admin'] == true) {
-				$trtheadfooter .= '<th class="text-center">Statistiques</th>';
+				$trtheadfooter .= '<th style="text-align:center">Statistiques</th>';
 			}
-			$trtheadfooter .= '<!--<th class="text-center">' . tr("LIST_COUNT_ERRORS_ON_SUBSCRIBERS") . '</th>-->
-				<th class="text-center">' . tr("SEND_IN_PROCESS") . '</th>';
+			$trtheadfooter .= '<!--<th style="text-align:center">' . tr("LIST_COUNT_ERRORS_ON_SUBSCRIBERS") . '</th>-->
+				<th style="text-align:center">' . tr("SEND_IN_PROCESS") . '</th>';
 			if (($_SESSION['dr_listes'] == 'Y' && $_SESSION['dr_liste'] == '') || $_SESSION['dr_is_admin'] == true) {
-				$trtheadfooter .= '<th class="text-center">' . tr("LIST_DUPLICATE") . '</th>
-					<th class="text-center">' . tr("LIST_MIX_TITLE") . '</th>
-					<th class="text-center">' . tr("LIST_EMPTY") . '</th>
-					<th class="text-center">' . tr("LIST_MANAGE") . '</th>
-					<th class="text-center">' . tr("DELETE") . '</th> ';
+				$trtheadfooter .= '<th style="text-align:center">Dupliquer</th>
+					<th style="text-align:center">' . tr("LIST_MIX_TITLE") . '</th>
+					<th style="text-align:center">Vider</th>
+					<th style="text-align:center">Gérer</th>
+					<th style="text-align:center">' . tr("DELETE") . '</th> ';
 			}
 			$trtheadfooter .= '</tr>';
-			echo '<thead>' . $trtheadfooter . '</thead>
-				<tfoot>' . $trtheadfooter . '</tfoot>
-				<tbody>';
+			echo '<thead>' . $trtheadfooter . '</thead>';
+			echo '<tfoot>' . $trtheadfooter . '</tfoot>';
+			echo '<tbody>';
 			foreach($list as $item) {
 				if ($_SESSION['dr_log'] == 'Y' && $item['list_id'] == $list_id && $_SESSION['dr_is_user']) {
-					echo loggit($_SESSION['dr_id_user'] . '.log', $_SESSION['dr_id_user'] . ' ' . tr("LOG_SELECT") . ' : "' . $item['newsletter_name'] . '"');
+					echo loggit($_SESSION['dr_id_user'] . '.log', $_SESSION['dr_id_user'] . ' a sélectionné la liste : "' . $item['newsletter_name'] . '"');
 				}
 				$lnl = list_newsletter_last_id_send($cnx, $row_config_globale['table_send'], $item['list_id'], $row_config_globale['table_archives']);
 				$clnl = count($lnl);
 				if (($_SESSION['dr_listes'] == 'Y' && $_SESSION['dr_liste'] == '') || $_SESSION['dr_is_admin'] == true) {
-					echo '<tr>
-						<td style="padding:8px;"><a href="?list_id=' . $item['list_id'] . '&token='
-						. $token . '" data-toggle="tooltip" title="' . tr("CHOOSE_THIS_LIST") . '">' . $item['newsletter_name'] . '</a></td>
-						<td class="text-center"><b>' . $item['list_id'] . '</b></td>
-						<td style="text-align:center;padding:8px;">';
+					echo '<tr>';
+					echo '<td style="padding:8px;"><a href="?list_id=' . $item['list_id'] . '&token='
+						. $token . '" data-toggle="tooltip" title="' . tr("CHOOSE_THIS_LIST") . '">' . $item['newsletter_name'] . '</a></td>';
+					echo '<td style="text-align:center;padding:8px;">';
 					if($_SESSION['dr_redaction']=='Y'||$_SESSION['dr_is_admin']==true) {
-						echo '<a href="?page=compose&token=' . $token . '&list_id=' . $item['list_id'] . '&op=init" data-toggle="tooltip" 
-							title="' . tr("LIST_CLASSIC_WRITING") .'"><button type="button" class="btn btn-default btn-sm"><span 
-							class="glyphicon glyphicon-pencil" style="color:red"></span></button></a>
-							<a href="?page=wysiwyg&token=' . $token . '&list_id=' . $item['list_id'] . '&op=init" data-toggle="tooltip" 
-							title="' . tr("WYSIWYG_EDITOR") . '"><button type="button" class="btn btn-default btn-sm"><span 
-							class="glyphicon glyphicon-edit"></span></button></a>
-							<a href="?page=archives&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" 
-							title="'.tr("LIST_ACCES_ARCHIVES").'"><button type="button" 
-							class="btn btn-default btn-sm"><span class="glyphicon glyphicon-repeat"></span></button></a>';
+						echo '<a href="?page=compose&token=' . $token . '&list_id=' . $item['list_id'] . '&op=init" data-toggle="tooltip" title="Rédaction avec le composeur classique"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil" style="color:red"></span></button></a>
+							<a href="?page=wysiwyg&token=' . $token . '&list_id=' . $item['list_id'] . '&op=init" data-toggle="tooltip" title="' . tr("WYSIWYG_EDITOR") . '"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-edit"></span></button></a>
+							<a href="?page=archives&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" title="Accès aux envois archivé de la liste, rédaction à partir d\'une archive existante"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-repeat"></span></button></a>
+						';
 					}
 					if($_SESSION['dr_envois']=='Y' || $_SESSION['dr_is_admin']==true) {
-						echo ' <a href="?page=task&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" 
-							title="'.tr("LIST_TASKS").'"><button type="button" class="btn btn-default btn-sm"><span 
-							class="glyphicon glyphicon-calendar"></span></button></a>';
+						echo ' <a href="?page=task&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" title="Liste des envois planifiés de la liste"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-calendar"></span></button></a>';
 					}
 					if($type_serveur=='dedicated'&&($_SESSION['dr_bounce']=='Y'||$_SESSION['dr_is_admin']==true)) {
-						echo  ' <a href="?page=undisturbed&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" 
-							title="'.tr("LIST_BOUNCE").'"><button type="button" class="btn btn-default btn-sm"><span 
-							class="glyphicon glyphicon-alert"></span></button></a>';
+						echo  ' <a href="?page=undisturbed&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" title="Analyse des retours et traitements des mails en bounce"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-alert"></span></button></a>';
 					}
-					echo '</td>
-					<td style="text-align:right;padding:8px;"><b>' . $TrueSub = getSubscribersNumbers($cnx, $row_config_globale['table_email'], $item['list_id']) . '</b>';
+					echo '</td>';
+					echo '<td style="text-align:right;padding:8px;"><b>' . $TrueSub = getSubscribersNumbers($cnx, $row_config_globale['table_email'], $item['list_id']) . '</b>';
 					if ($_SESSION['dr_abonnes'] == 'Y' || $_SESSION['dr_is_admin'] == true) {
 						echo '&nbsp;<a href="?page=subscribers&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" title="'
-							. tr("SUBSCRIBER_MANAGEMENT") . '"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-user"></span></button></a>&nbsp;
-							<a href="?page=profils&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" title="' . tr("SUBSCRIBER_PROFILS")
-							. '"><button type="button" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-equalizer"></span></button></a>';
+							. tr("SUBSCRIBER_MANAGEMENT") . '"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-user"></span></button></a>&nbsp;';
+						echo '<a href="?page=profils&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" title="' . tr("SUBSCRIBER_PROFILS")
+							. '"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-equalizer"></span></button></a>';
 					}
+					echo '</td>';
 					$nb_errors_mail = getSubscribersNumbers($cnx, $row_config_globale['table_email_deleted'], $item['list_id'], 'bounce');
-					echo '</td>
-						<td style="text-align:center;padding:8px;">';
+					echo '<td style="text-align:center;padding:8px;">';
 					if ($nb_errors_mail > 0) {
-						echo '<a href="?page=subscribers&token=' . $token . '&list_id=' . $item['list_id'] . '#ManageErrorsBounce" data-toggle="tooltip" title="' 
-							. tr("LIST_MAILS_ERROR") . '">' . $nb_errors_mail . '</a>';
+						echo '<a href="?page=subscribers&token=' . $token . '&list_id=' . $item['list_id'] . '#ManageErrorsBounce" data-toggle="tooltip" title="Mails en erreur, gérer ces mails">'
+						. $nb_errors_mail . '</a>';
 					} else {
 						echo $nb_errors_mail;
 					}
-					$nb_unsub_mail = getSubscribersNumbers($cnx, $row_config_globale['table_email_deleted'], $item['list_id'], 'unsub');
-					echo '</td>
-						<td style="text-align:center;padding:8px;">';
-					if ($nb_unsub_mail > 0) {
-						echo '<a href="?page=subscribers&token=' . $token . '&list_id=' . $item['list_id'] . '#ManageErrorsUnsub" data-toggle="tooltip" title="' 
-							.tr("LIST_UNSUB").'">' . $nb_unsub_mail . '</a>';
+					echo '</td>';
+					$nb_errors_mail = getSubscribersNumbers($cnx, $row_config_globale['table_email_deleted'], $item['list_id'], 'unsub');
+					echo '<td style="text-align:center;padding:8px;">';
+					if ($nb_errors_mail > 0) {
+						echo '<a href="?page=subscribers&token=' . $token . '&list_id=' . $item['list_id'] . '#ManageErrorsUnsub" data-toggle="tooltip" title="Mails désinscrits">'
+						. $nb_errors_mail . '</a>';
 					} else {
-						echo $nb_unsub_mail;
+						echo $nb_errors_mail;
 					}
 					echo '</td>';
 					if ($_SESSION['dr_stats'] == 'Y' || $_SESSION['dr_is_admin'] == true) {
 						echo '<td style="text-align:center;"><a href="?page=tracking&token=' . $token . '&list_id=' . $item['list_id']
-							. '&data=ch" data-toggle="tooltip" title="' . tr("LIST_STATS") 
-							. '"><button type="button" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-stats"></span></button></a></td>';
+							. '&data=ch" data-toggle="tooltip" title="Statistiques de la liste"><button type="button" class="btn btn-default btn-sm"><span
+							class="glyphicon glyphicon-stats"></span></button></a></td>';
 					}
 					echo '<td style="text-align:center;padding:8px;">';
 					if (is_file("logs/__SEND_PROCESS__" . $item['list_id'] . ".pid")) {
-						echo '<div id="Send_Status"><a class="btn btn-danger btn-sm" onclick="ChangeStatus(\'stop\',' . $item['list_id'] . ')" data-toggle="tooltip" title="'
-						. tr("CLICK_STOP_SEND") . ' ?" onclick="return confirm(\'' . tr("WARNING_STOP_SEND") . ' ?\')">
-						<span class="glyphicon glyphicon-remove-sign"></span></a>
-						<a class="btn btn-primary btn-sm" onclick="ChangeStatus(\'pause\',' . $item['list_id'] . ')" data-toggle="tooltip" title="'
-						. tr("CLICK_PAUSE_SEND") . ' ?" onclick="return confirm(\'' . tr("WARNING_PAUSE_SEND") . ' ?\')">
-						<span class="glyphicon glyphicon-pause"></span></a>
-						<a class="btn btn-warning btn-sm" onclick="ChangeStatus(\'status\',' . $item['list_id'] . ')" data-toggle="tooltip" title="'
-						. tr("SEND_STATUS") . ' ?" ><span class="glyphicon glyphicon-question-sign"></span></a></div>';
-					} elseif (is_file("logs/__SEND_PROCESS__" . $item['list_id'] . ".paused")) {
-						echo '<div id="Send_Status"><a class="btn btn-danger btn-sm" onclick="ChangeStatus(\'stop\',' . $item['list_id'] . ')" data-toggle="tooltip" title="'
-						. tr("CLICK_STOP_SEND") . ' ?" onclick="return confirm(\'' . tr("WARNING_STOP_SEND") . ' ?\')">
-						<span class="glyphicon glyphicon-remove-sign"></span></a>
-						<a class="btn btn-success btn-sm" onclick="ChangeStatus(\'restart\',' . $item['list_id'] . ')" data-toggle="tooltip" title="'
-						. tr("CLICK_RESTART_SEND") . ' ?" onclick="return confirm(\'' . tr("WARNING_RESTART_SEND") . ' ?\')">
-						<span class="glyphicon glyphicon-play" ></span></a>
-						<a class="btn btn-warning btn-sm" onclick="ChangeStatus(\'status\',' . $item['list_id'] . ')" data-toggle="tooltip" title="'
-						. tr("SEND_STATUS") . ' ?" ><span class="glyphicon glyphicon-question-sign"></span></a>
-						</div>';
-					}
-					echo '</td>
-						<td style="text-align:center;"><a href="?page=listes&l=l&action=duplicate&list_id=' . $item['list_id'] . '&token=' 
-						. $token . '" data-toggle="tooltip" title="' . tr("LIST_DUPLICATE") . ' ?" onclick="return confirm(\'' . tr("LIST_DUPLICATE") 
-						. ' ?\')"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-copy"></span></button></td>
-						<td style="text-align:center;"><input type="checkbox" data-toggle="tooltip" class="mx" title="' 
-						. tr("LIST_MIX_DETAIL") . '" name="mix_list_id[]" value="' . $item['list_id'] . '" /></td>
-						<td style="text-align:center;"><a href="?page=listes&l=l&action=empty&list_id=' . $item['list_id'] . '&token=' . $token . '"
-						data-toggle="tooltip" title="'.tr("LIST_EMPTY_LIST").'" onclick="return confirm(\'' . tr("WARNING_EMPTY_LIST") . ' ?\')"><button type="button"
-						class="btn btn-default btn-sm"><span class="glyphicon glyphicon-erase"></span></button></a></td>
-						<td style="text-align:center;"><a href="?page=newsletterconf&list_id=' . $item['list_id'] . '&token=' . $token . '" data-toggle="tooltip" title="'
-						. tr("LIST_NEWSLETTER_CONFIGURATION") . '"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-cog"></span></button></a></td>
-						<td style="text-align:center;"><a href="?page=listes&l=l&action=delete&list_id=' . $item['list_id'] . '&token=' . $token . '" data-toggle="tooltip" title="'
-						. tr("DELETE_THIS_LIST") . ' ?" onclick="return confirm(\'' . tr("WARNING_DELETE_LIST") . ' ?\')"><button type="button"
-						class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash"></span></button></a></td>
-						</tr>';
-					if ($clnl > 0) {
-						echo '<tr>
-							<td style="text-align:right;">' . tr("LIST_LAST_CAMPAIGN") . ' (N° ' . $lnl[0]['id_mail'] . ') : </td>
-							<td style="padding:8px;" colspan=12><i>' . $lnl[0]['subject'] . '</i></td>
-						</tr>';
-					}
-				} elseif (($_SESSION['dr_listes'] == 'N' || $_SESSION['dr_is_user'] == true) && $_SESSION['dr_liste'] == $item['list_id']) {
-					echo '<tr>
-						<td style="padding:8px;"><a href="?list_id=' . $item['list_id'] . '&token=' . $token . '" data-toggle="tooltip" title="'
-							. tr("CHOOSE_THIS_LIST") . '">' . $item['newsletter_name'] . '</a></td>
-						<td class="text-center"><b>' . $item['list_id'] . '</b></td>' ;
-					if($_SESSION['dr_redaction']=='Y'||$_SESSION['dr_is_admin']==true||$_SESSION['dr_envois']=='Y') {
-						echo '<td style="text-align:center;padding:8px;">';
-					}						
-					if($_SESSION['dr_redaction']=='Y'||$_SESSION['dr_is_admin']==true) {
-						echo '<a href="?page=compose&token=' . $token . '&list_id=' . $item['list_id'] . '&op=init" data-toggle="tooltip" 
-							title="' . tr("LIST_CLASSIC_WRITING") .'"><button type="button" class="btn btn-default btn-sm"><span 
-							class="glyphicon glyphicon-pencil" style="color:red"></span></button></a>
-							<a href="?page=wysiwyg&token=' . $token . '&list_id=' . $item['list_id'] . '&op=init" data-toggle="tooltip" 
-							title="' . tr("WYSIWYG_EDITOR") . '"><button type="button" class="btn btn-default btn-sm"><span 
-							class="glyphicon glyphicon-edit"></span></button></a>
-							<a href="?page=archives&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" 
-							title="'.tr("LIST_ACCES_ARCHIVES").'"><button type="button" 
-							class="btn btn-default btn-sm"><span class="glyphicon glyphicon-repeat"></span></button></a>';
-					}
-					if($_SESSION['dr_envois']=='Y' || $_SESSION['dr_is_admin']==true) {
-						echo ' <a href="?page=task&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" 
-							title="'.tr("LIST_TASKS").'"><button type="button" class="btn btn-default btn-sm"><span 
-							class="glyphicon glyphicon-calendar"></span></button></a>';
-					}
-					if($_SESSION['dr_redaction']=='Y'||$_SESSION['dr_is_admin']==true||$_SESSION['dr_envois']=='Y') {
-						echo '</td>';
-					}
-					if ($_SESSION['dr_abonnes'] == 'Y' || $_SESSION['dr_is_admin'] == true) {
-						echo '<td style="text-align:center;padding:8px;">
-							<b>' . $TrueSub = getSubscribersNumbers($cnx, $row_config_globale['table_email'], $item['list_id']) . '</b>
-							&nbsp;<a href="?page=subscribers&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" title="'
-							. tr("SUBSCRIBER_MANAGEMENT") . '"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-user"></span></button></a>
-							&nbsp;<a href="?page=profils&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" title="'
-							. tr("SUBSCRIBER_PROFILS") . '"><button type="button" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-equalizer"></span></button></a>';
+						echo '<a href="?page=listes&l=l&action=stopsend&list_id=' . $item['list_id'] . '&token=' . $token . '" data-toggle="tooltip" title="'
+							. tr("CLICK_STOP_SEND") . ' ?" onclick="return confirm(\'' . tr("WARNING_STOP_SEND") . ' ?\')">';
+						echo '<span class="glyphicon glyphicon-remove-sign" style="font-size:24px;color:red;"></span>';
+						echo '</a>';
 					}
 					echo '</td>';
-					//$lnl = list_newsletter_last_id_send($cnx, $row_config_globale['table_send'], $item['list_id'], $row_config_globale['table_archives']);
-					echo '<td style="text-align:center;padding:8px;">' 
-						. getSubscribersNumbers($cnx, $row_config_globale['table_email_deleted'], $item['list_id'], 'bounce') 
-					. '</td><td style="text-align:center;padding:8px;">' 
-						. getSubscribersNumbers($cnx, $row_config_globale['table_email_deleted'], $item['list_id'], 'unsub') 
-					. '</td>';
-					//<td style="text-align:center;padding:8px;"><a data-toggle="tooltip" title="' . $lnl[0]['subject'] . '">' . $lnl[0]['LAST_CAMPAIGN_ID'] . '</a></td>';
+					echo '<td style="text-align:center;"><a href="?page=listes&l=l&action=duplicate&list_id=' . $item['list_id'] . '&token=' . $token . '" data-toggle="tooltip" title="'
+						. tr("LIST_DUPLICATE") . ' ?" onclick="return confirm(\'' . tr("LIST_DUPLICATE") . ' ?\')"><button type="button"
+						class="btn btn-default btn-sm"><span class="glyphicon glyphicon-copy"></span></button></td>';
+					echo '<td style="text-align:center;"><input type="checkbox" data-toggle="tooltip" class="mx" title="' . tr("LIST_MIX_DETAIL") . '" name="mix_list_id[]" value="'
+						. $item['list_id'] . '" /></td>';
+					echo '<td style="text-align:center;"><a href="?page=listes&l=l&action=empty&list_id=' . $item['list_id'] . '&token=' . $token . '"
+						data-toggle="tooltip" title="Vider cette liste ?" onclick="return confirm(\'' . tr("WARNING_EMPTY_LIST") . ' ?\')"><button type="button"
+						class="btn btn-default btn-sm"><span class="glyphicon glyphicon-erase"></span></button></a></td>';
+					echo '<td style="text-align:center;"><a href="?page=newsletterconf&list_id=' . $item['list_id'] . '&token=' . $token . '" data-toggle="tooltip" title="'
+						. tr("NEWSLETTER_CONFIGURATION") . '"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-cog"></span></button></a></td>';
+					echo '<td style="text-align:center;"><a href="?page=listes&l=l&action=delete&list_id=' . $item['list_id'] . '&token=' . $token . '" data-toggle="tooltip" title="'
+						. tr("DELETE_THIS_LIST") . ' ?" onclick="return confirm(\'' . tr("WARNING_DELETE_LIST") . ' ?\')"><button type="button"
+						class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash"></span></button></a></td>';
+					echo '</tr>';
+					if ($clnl > 0) {
+						echo '<tr><td style="text-align:right;">' . tr("LIST_LAST_CAMPAIGN") . ' : </td>';
+						echo '<td style="padding:8px;" colspan=11><i>' . $lnl[0]['subject'] . '</i></td>';
+						echo '</tr>';
+					}
+				} elseif (($_SESSION['dr_listes'] == 'N' || $_SESSION['dr_is_user'] == true) && $_SESSION['dr_liste'] == $item['list_id']) {
+					echo '<tr>';
+					echo '<td style="padding:8px;"><a href="?list_id=' . $item['list_id'] . '&token=' . $token . '" data-toggle="tooltip" title="'
+						. tr("CHOOSE_THIS_LIST") . '">' . $item['newsletter_name'] . '</a></td>';
+					echo '<td style="text-align:right;padding:8px;"><b>' . $TrueSub = getSubscribersNumbers($cnx, $row_config_globale['table_email'], $item['list_id']) . '</b>';
+					if ($_SESSION['dr_abonnes'] == 'Y' || $_SESSION['dr_is_admin'] == true) {
+						echo '&nbsp;<a href="?page=subscribers&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" title="'
+							. tr("SUBSCRIBER_MANAGEMENT") . '"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-user"></span></button></a>&nbsp;';
+						echo '<a href="?page=profils&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" title="'
+							. tr("SUBSCRIBER_PROFILS") . '"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-equalizer"></span></button></a>';
+					}
+					echo '</td>';
 					if ($_SESSION['dr_stats'] == 'Y' || $_SESSION['dr_is_admin'] == true) {
-						echo '<td style="text-align:center;padding:8px;">&nbsp;<a href="?page=tracking&token=' . $token . '&list_id=' . $item['list_id'] . '&data=ch" data-toggle="tooltip"
-							title="' . tr("LIST_STATS") . '"><button type="button" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-stats"></span></button></a>
-						</td>';
+						echo '<td style="text-align:center;"><a href="?page=tracking&token=' . $token . '&list_id=' . $item['list_id'] . '&data=ch" data-toggle="tooltip"
+							title="Statistiques de la liste"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-stats"></span></button></a></td>';
 					}
+					echo '<td style="text-align:center;padding:8px;">' . getSubscribersNumbers($cnx, $row_config_globale['table_email_deleted'], $item['list_id']) . '</td>';
+					$lnl = list_newsletter_last_id_send($cnx, $row_config_globale['table_send'], $item['list_id'], $row_config_globale['table_archives']);
+					echo '<td style="text-align:center;padding:8px;"><a data-toggle="tooltip" title="' . $lnl[0]['subject'] . '">' . @$lnl[0]['LAST_CAMPAIGN_ID'] . '</a></td>';
+					echo '<td style="text-align:center;padding:8px;">';
 					if (is_file("logs/__SEND_PROCESS__" . $item['list_id'] . ".pid")) {
-						echo '
-						<td style="text-align:center;padding:8px;"><a href="?page=listes&l=l&action=stopsend&list_id=' . $item['list_id'] . '&token=' . $token . '" data-toggle="tooltip" title="' . tr("CLICK_STOP_SEND") . ' ?"
-							onclick="return confirm(\'' . tr("WARNING_STOP_SEND") . ' ?\')">
-							<span class="glyphicon glyphicon-remove-sign" style="font-size:24px;color:red;"></span>
-							</a>
-						</td>';
+						echo '<a href="?page=listes&l=l&action=stopsend&list_id=' . $item['list_id'] . '&token=' . $token . '" data-toggle="tooltip" title="' . tr("CLICK_STOP_SEND") . ' ?"
+							onclick="return confirm(\'' . tr("WARNING_STOP_SEND") . ' ?\')">';
+						echo '<span class="glyphicon glyphicon-remove-sign" style="font-size:24px;color:red;"></span>';
+						echo '</a>';
 					} else {
-						echo '<td style="text-align:center;padding:8px;">'
-							. tr("LIST_NO_SENDING_PROCESS") .
-						'</td>';
+						echo 'Pas d\'envoi en cours';
 					}
-					echo '</td>
-					</tr>';
-				} elseif (($_SESSION['dr_listes'] == 'N' || $_SESSION['dr_is_user'] == true) && $_SESSION['dr_liste'] == '') {
-					echo '<tr>
-						<td style="padding:8px;"><a href="?list_id=' . $item['list_id'] . '&token=' . $token . '" data-toggle="tooltip" title="'
-							. tr("CHOOSE_THIS_LIST") . '">' . $item['newsletter_name'] . '</a></td>
-						<td class="text-center"><b>' . $item['list_id'] . '</b></td>
-						<td style="text-align:center;padding:8px;"><b>' . $TrueSub = getSubscribersNumbers($cnx, $row_config_globale['table_email'], $item['list_id']) . '</b>';
+					echo '</td>';
+					echo '<td></td>';
+					echo '</tr>';
+				}elseif (($_SESSION['dr_listes'] == 'N' || $_SESSION['dr_is_user'] == true) && $_SESSION['dr_liste'] == '') {
+					echo '<tr>';
+					echo '<td style="padding:8px;"><a href="?list_id=' . $item['list_id'] . '&token=' . $token . '" data-toggle="tooltip" title="'
+						. tr("CHOOSE_THIS_LIST") . '">' . $item['newsletter_name'] . '</a></td>';
+					echo '<td></td>';
+					echo '<td style="text-align:center;padding:8px;"><b>' . $TrueSub = getSubscribersNumbers($cnx, $row_config_globale['table_email'], $item['list_id']) . '</b>';
 					if ($_SESSION['dr_abonnes'] == 'Y' || $_SESSION['dr_is_admin'] == true) {
 						echo '&nbsp;<a href="?page=subscribers&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" title="' . tr("SUBSCRIBER_MANAGEMENT")
-							. '"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-user"></span></button></a>&nbsp;
-							<a href="?page=profils&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" title="' . tr("SUBSCRIBER_PROFILS")
+							. '"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-user"></span></button></a>&nbsp;';
+						echo '<a href="?page=profils&token=' . $token . '&list_id=' . $item['list_id'] . '" data-toggle="tooltip" title="' . tr("SUBSCRIBER_PROFILS")
 							. '"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-equalizer"></span></button></a>';
 					}
 					echo '</td>';
 					if ($_SESSION['dr_stats'] == 'Y' || $_SESSION['dr_is_admin'] == true) {
 						echo '<td style="text-align:center;"><a href="?page=tracking&token=' . $token . '&list_id=' . $item['list_id'] . '&data=ch" data-toggle="tooltip"
-							title="' . tr("LIST_STATS") . '"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-stats"></span></button></a></td>';
+							title="Statistiques de la liste"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-stats"></span></button></a></td>';
 					}
 					//echo '<td style="text-align:center;padding:8px;">' . getSubscribersNumbers($cnx, $row_config_globale['table_email_deleted'], $item['list_id']) . '</td>';
 
 					$nb_errors_mail = getSubscribersNumbers($cnx, $row_config_globale['table_email_deleted'], $item['list_id'], 'bounce');
 					echo '<td style="text-align:right;padding:8px;">';
 					if ($nb_errors_mail > 0) {
-						echo '<a href="?page=subscribers&token=' . $token . '&list_id=' . $item['list_id'] 
-							. '#ManageErrorsBounce" data-toggle="tooltip" title=' . tr("LIST_MAILS_ERROR") . '">' . $nb_errors_mail . '</a>';
+						echo '<a href="?page=subscribers&token=' . $token . '&list_id=' . $item['list_id'] . '#ManageErrorsBounce" data-toggle="tooltip" title="Mails en erreur, gérer ces mails">'
+						. $nb_errors_mail . '</a>';
 					} else {
 						echo $nb_errors_mail;
 					}
 					echo '</td>';
-					$nb_unsub_mail = getSubscribersNumbers($cnx, $row_config_globale['table_email_deleted'], $item['list_id'], 'unsub');
+					$nb_errors_mail = getSubscribersNumbers($cnx, $row_config_globale['table_email_deleted'], $item['list_id'], 'unsub');
 					echo '<td style="text-align:center;padding:8px;">';
-					if ($nb_unsub_mail > 0) {
-						echo '<a href="?page=subscribers&token=' . $token . '&list_id=' . $item['list_id'] . '#ManageErrorsUnsub" data-toggle="tooltip" title="' 
-						. tr("LIST_UNSUB") . '">' . $nb_unsub_mail . '</a>';
+					if ($nb_errors_mail > 0) {
+						echo '<a href="?page=subscribers&token=' . $token . '&list_id=' . $item['list_id'] . '#ManageErrorsUnsub" data-toggle="tooltip" title="Mails désinscrits">'
+						. $nb_errors_mail . '</a>';
 					} else {
-						echo $nb_unsub_mail;
+						echo $nb_errors_mail;
 					}
-					echo '</td>
-						<td style="text-align:center;padding:8px;">';
+					echo '</td>';
+					echo '<td style="text-align:center;padding:8px;">';
 					if (is_file("logs/__SEND_PROCESS__" . $item['list_id'] . ".pid")) {
 						if ($_SESSION['dr_abonnes'] == 'Y' || $_SESSION['dr_is_admin'] == true) {
-							echo '<a href="?page=listes&l=l&action=stopsend&list_id=' . $item['list_id'] . '&token=' . $token . '" data-toggle="tooltip" title="' 
-								. tr("CLICK_STOP_SEND")	. ' ?" onclick="return confirm(\'' . tr("WARNING_STOP_SEND") . ' ?\')">
-								<span class="glyphicon glyphicon-remove-sign" style="font-size:24px;color:red;"></span></a>';
+							echo '<a href="?page=listes&l=l&action=stopsend&list_id=' . $item['list_id'] . '&token=' . $token . '" data-toggle="tooltip" title="' . tr("CLICK_STOP_SEND")
+								. ' ?" onclick="return confirm(\'' . tr("WARNING_STOP_SEND") . ' ?\')">';
+							echo '<span class="glyphicon glyphicon-remove-sign" style="font-size:24px;color:red;"></span>';
+							echo '</a>';
 						} else {
 							echo 'Envoi en cours';
 						}
 					} else {
 						echo 'Pas d\'envoi en cours';
 					}
-					echo '</td>
-					</tr>';
+					echo '</td>';
+					echo '</tr>';
 					if ($clnl > 0) {
-						echo '<tr>
-							<td style="text-align:right;">' . tr("LIST_LAST_CAMPAIGN") . ' : </td>
-							<td style="padding:8px;" colspan=12><i>' . $lnl[0]['subject'] . '</i></td>
-						</tr>';
+						echo '<tr><td style="text-align:right;">' . tr("LIST_LAST_CAMPAIGN") . ' : </td>';
+						echo '<td style="padding:8px;" colspan=11><i>' . $lnl[0]['subject'] . '</i></td>';
+						echo '</tr>';
 					}
 				}
 			}
 			echo '</table>';
+			echo '<div id="submitMix" style="display:none;margin-bottom:10px;margin-top:10px;" align="center">';
+			echo '<input type="submit" class="btn btn-primary" id="sbmix" value="' . tr("LIST_MIX_TITLE") . '" disabled>';
+			echo '<input type="hidden" name="action" value="mix">';
+			echo '<input type="hidden" name="l" value="l">';
+			echo '<input type="hidden" name="page" value="listes">';
+			echo '<input type="hidden" name="token" value="' . $token . '">';
+			echo '</div></form>';
 			if (($_SESSION['dr_listes'] == 'Y' && $_SESSION['dr_liste'] == '') || $_SESSION['dr_is_admin'] == true) {
-				echo '<div id="submitMix" style="display:none;margin-bottom:10px;margin-top:10px;" align="center">
-				<input type="submit" class="btn btn-primary" id="sbmix" value="' . tr("LIST_MIX_TITLE") . '" disabled>
-				<input type="hidden" name="action" value="mix">
-				<input type="hidden" name="l" value="l">
-				<input type="hidden" name="page" value="listes">
-				<input type="hidden" name="token" value="' . $token . '">
-				</div></form>
-				<div style="margin-top:7px;"><a href="?page=listes&token=' . $token . '&l=c" data-toggle="tooltip" title="' 
-				. tr("CREATE_NEW_LIST") . '"><button type="button"class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-plus"></i>&nbsp;' 
-				. tr("CREATE_NEW_LIST") . '</button></a></div>';
+				echo '<div style="margin-top:7px;"><a href="?page=listes&token=' . $token . '&l=c" data-toggle="tooltip" title="Créer une nouvelle liste"><button type="button"
+					class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-plus"></i>&nbsp;' . tr("CREATE_NEW_LIST") . '</button></a></div>';
 			}
 		} elseif ($list_name == - 1) {
 			$error_list = true;
@@ -289,11 +231,10 @@ switch ($l) {
 	break;
 
 	case 'c':
-		$tPath = ($row_config_globale['path'] == '/' ? $row_config_globale['path'] : '/' . $row_config_globale['path']) ;
-		echo "<form action='' method='post'>
-		<div class='row'>
-		<div class='col-md-10'>
-			<header><h4>" . tr("NEWSLETTER_CREATE") . "</h4></header>
+		echo "<form action='' method='post'>";
+		echo '<div class="row">';
+		echo '<div class="col-md-10">';
+		echo "<header><h4>" . tr("NEWSLETTER_CREATE") . "</h4></header>
 			<input type='hidden' name='op' value='createConfig' />
 			<input type='hidden' name='token' value='$token' />
 			<div class='form-group'><label>" . tr("NEWSLETTER_NAME") . " : </label>
@@ -348,15 +289,17 @@ switch ($l) {
 					{title: 'Times New Roman', inline: 'span', styles: { 'font-family':'times new roman,times'}},
 					{title: 'Verdana', inline: 'span', styles: { 'font-family':'Verdana'}}
 				],
-				templates : [ 
-					{title: 'Simple Responsive Theme',url: 'js/tinymce/templates/pmnl/simple.html',description: 'A very simple and responsive theme'},
-					{title: 'Cerberus Template Fluid',url: 'js/tinymce/templates/cerberus/cerberus-fluid.html',description: 'Cerberus : http://tedgoas.github.io/Cerberus/#fluid'},
-					{title: 'Cerberus Template Responsive',url: 'js/tinymce/templates/cerberus/cerberus-responsive.html',description: 'Cerberus : http://tedgoas.github.io/Cerberus/#responsive'},
-					{title: 'Cerberus Template Hybrid',url: 'js/tinymce/templates/cerberus/cerberus-hybrid.html',description: 'Cerberus : http://tedgoas.github.io/Cerberus/#hybrid'},
-					{title: 'Antwort Single-column',url: 'js/tinymce/templates/antwort/single-column.html',description: 'Antwort, Responsive Layouts for Email : https://github.com/InterNations/antwort'},
-					{title: 'Antwort Two Cols Simple',url: 'js/tinymce/templates/antwort/two-cols-simple.html',description: 'Antwort, Responsive Layouts for Email : https://github.com/InterNations/antwort'},
-					{title: 'Antwort Three Cols Image',url: 'js/tinymce/templates/antwort/three-cols-images.html',description: 'Antwort, Responsive Layouts for Email : https://github.com/InterNations/antwort'},
-					{title: 'Lee Munroe Simple Email',url: 'js/tinymce/templates/leemunroe/really-simple-responsive-email-template.html', description: 'Really Simple Responsive HTML Email Template : https://github.com/leemunroe'},
+				templates : [ ";
+		$tPath = ($row_config_globale['path'] == '/' ? $row_config_globale['path'] : '/' . $row_config_globale['path']) . "js/tinymce/templates/";
+		echo "
+					{title: 'Simple Responsive Theme',url: '" . $tPath . "pmnl/simple.html',description: 'A very simple and responsive theme'},
+					{title: 'Cerberus Template Fluid',url: '" . $tPath . "cerberus/cerberus-fluid.html',description: 'Cerberus : http://tedgoas.github.io/Cerberus/#fluid'},
+					{title: 'Cerberus Template Responsive',url: '" . $tPath . "cerberus/cerberus-responsive.html',description: 'Cerberus : http://tedgoas.github.io/Cerberus/#responsive'},
+					{title: 'Cerberus Template Hybrid',url: '" . $tPath . "cerberus/cerberus-hybrid.html',description: 'Cerberus : http://tedgoas.github.io/Cerberus/#hybrid'},
+					{title: 'Antwort Single-column',url: '" . $tPath . "antwort/single-column.html',description: 'Antwort, Responsive Layouts for Email : https://github.com/InterNations/antwort'},
+					{title: 'Antwort Two Cols Simple',url: '" . $tPath . "antwort/two-cols-simple.html',description: 'Antwort, Responsive Layouts for Email : https://github.com/InterNations/antwort'},
+					{title: 'Antwort Three Cols Image',url: '" . $tPath . "antwort/three-cols-images.html',description: 'Antwort, Responsive Layouts for Email : https://github.com/InterNations/antwort'},
+					{title: 'Lee Munroe Simple Email',url: '" . $tPath . "leemunroe/really-simple-responsive-email-template.html', description: 'Really Simple Responsive HTML Email Template : https://github.com/leemunroe'},
 				],
 				cleanup : true,
 				cleanup_on_startup : true,
@@ -364,8 +307,8 @@ switch ($l) {
 				custom_undo_redo_levels : 20,
 				doctype : '<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">',
 				entity_encoding : 'named',
-				external_filemanager_path:'" . $row_config_globale['base_url'] . $tPath . "js/tinymce/plugins/filemanager/',
-				external_plugins: { 'filemanager' : '" . $row_config_globale['base_url'] . $tPath . "js/tinymce/plugins/filemanager/plugin.min.js'},
+				external_filemanager_path:'" . ($row_config_globale['path'] == '/' ? $row_config_globale['path'] : '/' . $row_config_globale['path']) . "js/tinymce/plugins/filemanager/',
+				external_plugins: { 'filemanager' : '" . ($row_config_globale['path'] == '/' ? $row_config_globale['path'] : '/' . $row_config_globale['path']) . "js/tinymce/plugins/filemanager/plugin.min.js'},
 				extended_valid_elements: 'pre[*],style[*]',
 				filemanager_title:'Responsive Filemanager' ,
 				fontsize_formats : '8px 9px 10px 11px 12px 13px 14px 18px 24px',
@@ -392,15 +335,16 @@ switch ($l) {
 					tools: {title: 'Tools', items: 'code'}
 				}
 			});
-			</script></div>
-			<div class='col-md-2'>
-				<div class='content-box fixed'>
-					<header><h4>Actions :</h4></header>
-					<input type='submit' value='" . tr("NEWSLETTER_SAVE_NEW") . "'  class='btn btn-success' />
-					<input type='hidden' name='page' value='listes' />
-					<input type='hidden' name='token' value='" . $token . "' />
-				</form>
-				</div>
-			</div>";
+			</script>";
+		echo '</div>';
+		echo '<div class="col-md-2">';
+		echo '<div class="content-box fixed">';
+		echo '<header><h4>Actions :</h4></header>';
+		echo "<input type='submit' value=\"" . tr("NEWSLETTER_SAVE_NEW") . "\"  class='btn btn-success' />";
+		echo "<input type='hidden' name='page' value='listes' />";
+		echo "<input type='hidden' name='token' value='$token' />";
+		echo '</form>';
+		echo '</div>';
+		echo '</div>';
 	break;
 }
