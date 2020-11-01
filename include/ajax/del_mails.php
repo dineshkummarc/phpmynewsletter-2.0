@@ -15,12 +15,25 @@ if(!file_exists("../config.php")) {
 		exit;
 	}
 }
+$row_config_globale = $cnx->SqlRow("SELECT * FROM $table_global_config");
+(count($row_config_globale)>0) ? $r='SUCCESS' : $r='';
+if($r != 'SUCCESS') {
+	include("../lang/english.php");
+	echo "<div class='error'>".tr($r)."<br>";
+	echo "</div>";
+	exit;
+}
+if(empty($row_config_globale['language'])){
+	$row_config_globale['language']="english";
+}else{
+	include("../lang/".$row_config_globale['language'].".php");
+}
 $q = (empty($_POST['search']) ? "" : $_POST['search']);
 $list_id = (empty($_POST['list_id']) ? "" : $_POST['list_id']);
 if(!empty($q)&&!empty($list_id)){
 	$cpt_to_delete=$cnx->query("SELECT email
 			FROM ".$row_config_globale['table_email']." 
-				WHERE email=".escape_string($q)." 
+				WHERE email=".escape_string($cnx,$q)." 
 					AND list_id='".(int)$list_id."'")->fetchAll();
 	if (count($cpt_to_delete)>0) {
 		$deleted = delete_subscriber($cnx,$row_config_globale['table_email'],$list_id,$q,$row_config_globale['table_email_deleted'],'by_admin');

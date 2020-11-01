@@ -7,6 +7,7 @@ if(!file_exists("../config.php")) {
 	header("Location:../../install.php");
 	exit;
 } else {
+	session_start();
 	include("../../_loader.php");
 	if(isset($_POST['token'])){$token=$_POST['token'];}else{$token='';}
 	if(!tok_val($token)){
@@ -14,7 +15,17 @@ if(!file_exists("../config.php")) {
 		die();
 	}
 }
-
+$row_config_globale = $cnx->SqlRow("SELECT * FROM $table_global_config");
+(count($row_config_globale)>0)?$r='SUCCESS':$r='';
+if($r != 'SUCCESS') {
+	include("../lang/english.php");
+	echo "<div class='error'>".tr($r)."<br>";
+	echo "</div>";
+	die();
+}
+if(empty($row_config_globale['language']))$row_config_globale['language']="english";
+include("../lang/".$row_config_globale['language'].".php");
+$backup_dir = "../backup_db";
 if(!is_dir($backup_dir)){
 	if(mkdir("$backup_dir",0755)){
 		// continue

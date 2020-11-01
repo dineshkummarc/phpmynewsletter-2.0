@@ -15,7 +15,14 @@ if(!file_exists("../config.php")) {
 		exit;
 	}
 }
-
+$row_config_globale = $cnx->SqlRow("SELECT * FROM $table_global_config");
+(count($row_config_globale)>0)?$r='SUCCESS':$r='';
+if($r != 'SUCCESS') {
+	include("../lang/english.php");
+	echo "<div class='error'>".tr($r)."<br>";
+	echo "</div>";
+	exit;
+}
 !empty($_POST['search']) ? $q=$_POST['search'] : $q='';
 !empty($_POST['list_id']) ? $list_id=$_POST['list_id'] : $list_id='';
 if(!empty($q) && !empty($list_id)){
