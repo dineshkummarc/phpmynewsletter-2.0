@@ -1,118 +1,119 @@
 ![PhpMyNewsLetter 2.0](https://github.com/dineshkummarc/phpmynewsletter-2.0/blob/master/screenshot/phpmynewsletter_v2.png)
 phpmynewsletter 2.0
 ===================
+# CURRENT VERSION:
+v2.0.5
 
-# VERSION COURANTE : 2.0.5
- 
 # INSTALLATION
-Télécharger le fichier zip : https://github.com/Arnaud69/phpmynewsletter-2.0/archive/master.zip
-Dézipper dans un répertoire ou à la racine d'un sous-domaine dédié aux newsletter, appelez le script install.php depuis votre navigateur, remplissez les champs, et suivez la procédure.
+Download the zip file from this repository. Unzip in a directory or at the root of a subdomain dedicated to newsletter, call the install.php script from your browser, fill in the fields, and follow the procedure.
 
 # SYNOPSIS
-Envoyez des emails, ajoutez des pièces jointes, gérez les retours (bounces), suivez les clics, les ouvertures, géolocalisation, etc...
+Send emails, add attachments, manage bounces, track clicks, openings, geolocation, etc ...
 
-# CONFIGURATION MINIMALE REQUISE :
- - PHP 5.3 min avec : imap, curl, openssl, module php exec
+# MINIMUM REQUIRED CONFIGURATION:
+ - PHP 5.3 min with: imap, curl, openssl, php exec module
  - Mysql 5.x min
- - VPS/linux ou dédié server/linux pour un accès à crontab et gestion des bounces
- - les emails de vos correspondants
- - Et vos petites mains pour écrire de jolis mails et faire de belles campagnes !
+ - VPS / linux or dedicated server / linux for access to crontab and management of bounces
+ - emails from your correspondents
+ - And your little hands to write pretty emails and run great campaigns!
 
-# CHANGELOG :
-## GENERAL :
-- Compatibilité PHP 7 totale
-## CORRECTIONS :
-- Correction des bugs des versions antérieures
-- Amélioration du script d'installation et correction du bug de création de la base
-- Amélioration de la qualité des calculs des statistiques d'ouvertures (navigateurs, OS,...)
-- Correction de la table des codes Géoloc (https://www.iso.org/obp/ui/)
-- Correction du bug qui altérait le css dans les messages
-- Ajout du "sql_mode = ''" pour les serveurs dédiés (tolérance aux champs non définis avec des valeurs par défaut)
-- Amélioration du process unique_id, il y avait un risque de doublons de calcul de hash
-- Adaptation globale pour une installation en sous-domaine
-- Amélioration du recensement des mails en erreur à l'envoi (via phpmailer) en tâche planifiée (n'étaient pas comptabilisés)
-- Correction du rattachement des clés DKIM
-- Correction du traitement des mails en bounce
-- Ajout du calcul du prefix des tables (ex : "pmnl2_") dans la config pour gestion des tables plus fine
-## NOUVEAUTES :
-- Champs sujets passés en utf8mb4 pour permettre usage des Emojis
-- Gestion du Pre-Header
-- Choix du menu : horizontal avec menus déroulants ou vertical traditionnel (configuration globale > règlages divers). Préférez le menu horizontal !
-- Choix d'afficher ou ne pas afficher le loader (configuration globale > règlages divers)
-- Géolocalisation des ouvertures (amcharts)
-- Création de templates par un éditeur Wysiwyg (What You See Is What You Get)
-- Création de la gestion des droits (un ou plusieurs droits à des utilisateurs crées par un admin) et log des actions
-- Test des enregistrement DKIM, SPF et DMARC du domaine expéditeur
-- Sauvegarde de la base à la demande et téléchargement (nombre de sauvegardes paramétrable)
-- Regénération d'un mot de passe envoyé par mail si perdu
-- Possibilité aux abonnés "free mobile" de recevoir des textos de fin de tâche d'envoi, d'inscriptions et désinscriptions
-- Utilisation des CDNs pour l'import des librairies JS et CSS (au maximum)
-- Vérification obligatoire des liens contenus dans un message avant preview
-## OUTILS INTEGRES :
+# CHANGELOG:
+## GENERAL:
+- Full PHP 7 compatibility
+
+## CORRECTIONS:
+- Fixed bugs from previous versions
+- Improvement of the installation script and correction of the database creation bug
+- Improved the quality of opening statistics calculations (browsers, OS, ...)
+- Correction of the Geoloc code table (https://www.iso.org/obp/ui/)
+- Fixed the bug which altered the css in the messages
+- Added "sql_mode = ''" for dedicated servers (tolerance to undefined fields with default values)
+- Improvement of the unique_id process, there was a risk of duplicate hash calculations
+- Global adaptation for a sub-domain installation
+- Improvement of the inventory of emails in error when sending (via phpmailer) as a scheduled task (were not counted)
+- Correction of the attachment of DKIM keys
+- Correction of the processing of bounce mails
+- Addition of the calculation of the table prefix (ex: "pmnl2_") in the config for finer table management
+## NEWS:
+- Subject fields passed in utf8mb4 to allow use of Emojis
+- Pre-Header management
+- Menu choice: horizontal with drop-down menus or traditional vertical (global configuration> various settings). Prefer the horizontal menu!
+- Choice to display or not display the loader (global configuration> various settings)
+- Geolocation of openings (amcharts)
+- Creation of templates by a Wysiwyg editor (What You See Is What You Get)
+- Creation of rights management (one or more user rights created by an admin) and actions log
+- Test of DKIM, SPF and DMARC records of the sending domain
+- Backup of the database on demand and download (configurable number of backups)
+- Regeneration of a password sent by email if lost
+- Possibility for "free mobile" subscribers to receive end of task sending text messages, subscriptions and unsubscriptions
+- Use of CDNs for importing JS and CSS libraries (maximum)
+- Mandatory verification of the links contained in a message before preview
+
+## BUILT-IN TOOLS:
 - Phpmailer 5.2.26
-## AMELIORATIONS :
-- Meilleure gestion de la comparaison des versions pour mises à jour possibles de versions mineures
-- Affichage des mails en erreur par liste
-- Code html de souscription basculé dans les paramètres des newsletters
-## GESTION DU TRACKING :
-- Géolocalisation des ouvertures (amcharts)
-- Affichage des liens cliqués en modal
-## GESTION DES MESSAGES ENVOYES :
-- Suppression de la mention phpmynewsletter 2.0 en bas des mails envoyés
-- Ajout des mails de REPLY et de BOUNCE
-## GESTION DES TACHES PLANIFIEES :
-- Correction du bug de suppression de la tâche planifiée
-## GESTION DES LOGS :
-- Correction du décalage dans les colonnes lorsqu'il n'y a pas de fichier log présent
-- Affichage des logs en modal
-## GESTIONS DES ABONNES :
-- Calcul du profil des abonnés (rubrique Profils des abonnés)
-- Pagination de la liste des abonnés en erreur en ajax
-## GESTIONS DES SMTPs :
-- Modification possible d'un smtp déclaré
-- Remise à 0 des compteurs (load balancing smtp) lors de la preview
-## GESTION DE LA REDACTION :
-- Ajout de templates responsive (depuis TinyMCE)
-- Thème "pmnl" des outils de rédaction TinyMCE
-## GESTION DES BOUNCES :
-- Correction du bug qui empêchait la suppression correcte des mails en erreur
-- Ajout de la possibilité d'un mail de bounce différent de l'expéditeur (alias d'un Return Path)
-- Ajout du paramètre array('DISABLE_AUTHENTICATOR' => 'GSSAPI') à la connexion imap pour les accéder aux serveurs de messagerie de type Exchange
-- Amélioration du REGEXP pour récupération des mails en bounce sur serveurs de messagerie de type Exchange 
+## IMPROVEMENTS:
+- Better management of the comparison of versions for possible updates of minor versions
+- Display of emails in error by list
+- Subscription html code switched in the newsletters settings
+## TRACKING MANAGEMENT:
+- Geolocation of openings (amcharts)
+- Display of clicked links in modal
+## MANAGEMENT OF SENT MESSAGES:
+- Removal of the phpmynewsletter 2.0 mention at the bottom of sent emails
+- Addition of REPLY and BOUNCE emails
+## MANAGEMENT OF PLANNED TASKS:
+- Fixed the deletion bug of the scheduled task
+## LOGS MANAGEMENT:
+- Correction of the offset in the columns when there is no log file present
+- Display of logs in modal
+## SUBSCRIBER MANAGEMENT:
+- Calculation of subscriber profile (Subscriber profiles section)
+- Pagination of the list of subscribers in error in ajax
+## SMTP MANAGEMENT:
+- Possible modification of a declared smtp
+- Reset counters to 0 (load balancing smtp) during the preview
+## EDITORIAL MANAGEMENT:
+- Addition of responsive templates (from TinyMCE)
+- "pmnl" theme of TinyMCE writing tools
+## BOUNCES MANAGEMENT:
+- Fixed the bug that prevented the correct deletion of erroneous emails
+- Addition of the possibility of a different bounce email from the sender (alias of a Return Path)
+- Addition of the array parameter ('DISABLE_AUTHENTICATOR' => 'GSSAPI') to the imap connection to access them to Exchange type mail servers
+- Improvement of REGEXP for retrieving bounce mails on Exchange type mail servers
 
 # SCREENSHOT, PREVIEW
-## Présentation en menu vertical
-![Menu vertical](https://www.phpmynewsletter.com/images/2.0.5/vertical_menu.png)
-## Le nouvel éditeur en mode Wysiwyg : glisser et déposer des blocs, puis les personnaliser
-![Editeur en mode WysiWyg](https://www.phpmynewsletter.com/images/2.0.5/wysiwyg.png)
-## Présentation en menu vertical et vue de la gestion des utilisateurs
-![Menu horizontal et gestion des utilisateurs de Phpmynewsletter](https://www.phpmynewsletter.com/images/2.0.5/account_manager.png)
-## La nouvelle gestion des comptes utilsateurs de PhpMyNewsLetter
-![Gestion des comptes expéditeurs](https://www.phpmynewsletter.com/images/2.0.5/account_manager.png)
-## La gestion détaillée des comptes utilisateurs
-![Gestion des utilisateurs de Phpmynewsletter, détail de la gestion des droits](https://www.phpmynewsletter.com/images/2.0.5/account_manager_detail.png)
-## La gestion des SMTPs pour le load balancing (plusieurs smtp = distribution plus rapide des mails)
-![Gestion des SMTPs pour load balancing SMTP](https://www.phpmynewsletter.com/images/2.0.5/1.jpg)
-## Les statistiques globales
-![Statistiques](https://www.phpmynewsletter.com/images/2.0.5/full_stats.png)
-## L'accès au profil des utilsateurs
-![Profils des utilisateurs](https://www.phpmynewsletter.com/images/2.0.5/users_profils.png)
+## Presentation in vertical menu
+! [Vertical menu] (https://www.phpmynewsletter.com/images/2.0.5/vertical_menu.png)
+## The new editor in Wysiwyg mode: drag and drop blocks, then customize them
+! [Editor in WysiWyg mode] (https://www.phpmynewsletter.com/images/2.0.5/wysiwyg.png)
+## Presentation in vertical menu and view of user management
+! [Horizontal menu and user management of Phpmynewsletter] (https://www.phpmynewsletter.com/images/2.0.5/account_manager.png)
+## The new management of user accounts from PhpMyNewsLetter
+! [Management of sender accounts] (https://www.phpmynewsletter.com/images/2.0.5/account_manager.png)
+## Detailed management of user accounts
+! [Phpmynewsletter user management, details of rights management] (https://www.phpmynewsletter.com/images/2.0.5/account_manager_detail.png)
+## Management of SMTPs for load balancing (several smtps = faster distribution of mails)
+! [Management of SMTPs for SMTP load balancing] (https://www.phpmynewsletter.com/images/2.0.5/1.jpg)
+## Global statistics
+! [Statistics] (https://www.phpmynewsletter.com/images/2.0.5/full_stats.png)
+## Access to user profiles
+! [User profiles] (https://www.phpmynewsletter.com/images/2.0.5/users_profils.png)
 
 # SUPPORT
-Support sur forum : https://www.phpmynewsletter.com/forum/.
+Support on forum: https://www.phpmynewsletter.com/forum/.
 
 # Roadmap for next version, TODO 2.0.6
-- Gestion indépendate des templates
-- Intégration d'un formulaire d'ajout des clés DKIM
-- Champs de personnalisation des emails
-- Champs de personnalisation des fonds d'écran
-- Compatibilité avec Postgresql et MsSQL
-- Mise à jour d'un simple clic
+- Independent management of templates
+- Integration of a form for adding DKIM keys
+- Email personalization fields
+- Wallpaper customization fields
+- Compatibility with Postgresql and MsSQL
+- Update with a single click
 - PHPMailer 6.x
-- Traduction complète en anglais
-- Si vous pensez à quelque chose qui puisse améliorer le produit, demandez !
+- Complete English translation
+- If you think of something that can improve the product, ask!
  
 # LICENSE
 GNU GPL
 
-Mettez une étoile si vous aimez  ;-)
+Put a star if you like ;-)
